@@ -11,12 +11,12 @@ export type CommentStatement = {
 export type ExpressionStatement = {
     type: 'EXPRESSION';
     path: string;
-    params: ExpressionStatement[];
+    params: (ExpressionStatement | LiteralStatement)[];
 };
 
 export type MustacheStatement = {
     type: 'MUSTACHE';
-    expression: ExpressionStatement;
+    expression: ExpressionStatement | LiteralStatement;
 };
 
 export type TemplateStatement = {

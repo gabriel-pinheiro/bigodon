@@ -19,7 +19,24 @@ describe('parser', () => {
         });
     });
 
-    // TODO should parse mustaches
+    it('should parse mustaches', () => {
+        const text = '{{ foo "bar" }}';
+        const result = parse(text);
+        expect(result).to.equal({
+            type: 'TEMPLATE',
+            statements: [{
+                type: 'MUSTACHE',
+                expression: {
+                    type: 'EXPRESSION',
+                    path: 'foo',
+                    params: [{
+                        type: 'LITERAL',
+                        value: 'bar',
+                    }],
+                },
+            }],
+        });
+    });
 
     it('should ignore comments', () => {
         const text = 'foo{{! this is a comment }}bar';
@@ -38,9 +55,51 @@ describe('parser', () => {
             }],
         });
     });
-    
-    // TODO should combine text, mustaches and comments
-    // TODO should give friendly error for non-closing tags
+
+    it('should combine text, comments and mustaches', () => {
+        const text = [
+            '{{! Greeting user }}',
+            'Hello {{atIndex (split name) 0}}!',
+        ].join('\n');
+        const result = parse(text);
+        expect(result).to.equal({
+            "type": "TEMPLATE",
+            "statements": [{
+                    "type": "COMMENT",
+                    "value": " Greeting user "
+                },
+                {
+                    "type": "TEXT",
+                    "value": "\nHello "
+                },
+                {
+                    "type": "MUSTACHE",
+                    "expression": {
+                        "type": "EXPRESSION",
+                        "path": "atIndex",
+                        "params": [{
+                                "type": "EXPRESSION",
+                                "path": "split",
+                                "params": [{
+                                    "type": "EXPRESSION",
+                                    "path": "name",
+                                    "params": []
+                                }]
+                            },
+                            {
+                                "type": "LITERAL",
+                                "value": 0
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "TEXT",
+                    "value": "!"
+                }
+            ]
+        });
+    });
 
     it('should escape open mustaches', () => {
         const text = "hello \\{{ world";
@@ -53,9 +112,6 @@ describe('parser', () => {
             }],
         });
     });
-
-    // TODO should escape close mustaches
-    // TODO should scape backslashes
 
     it('should fail on unexpected end block', () => {
         const text = '{{/foo}}';

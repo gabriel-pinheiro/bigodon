@@ -16,6 +16,11 @@ export const $comment: Parser<Statement> = Pr.all(char, text)
     .map((value): CommentStatement => ({ type: 'COMMENT', value }))
     .withName('comment');
 
+const mustache = $expression.map(expression => ({
+    type: 'MUSTACHE',
+    expression,
+}));
+
 export const $mustache = openMustache
     .pipe(() => peek)
     .pipe(char => {
@@ -24,7 +29,7 @@ export const $mustache = openMustache
             case '#': return $block;
             case '^': return $block;
             case '/': return Pr.fail('Unexpected block end');
-            default:  return $expression;
+            default:  return mustache;
         }
     })
     .pipe(content => optionalSpaces.map(() => content))
