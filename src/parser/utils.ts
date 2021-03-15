@@ -2,6 +2,7 @@ import Pr, { Parser } from 'pierrejs';
 
 export const join = (arr: string[]) => arr.join('');
 export const atPos = (pos: number) => (arr: string[]) => arr[pos];
+export const swap = (from: string, to: string) => Pr.string(from).map(() => to);
 
 export const openMustache = Pr.string('{{');
 export const closeMustache = Pr.string('}}');
