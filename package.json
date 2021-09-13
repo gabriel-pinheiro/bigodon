@@ -1,0 +1,41 @@
+{
+  "name": "superstache",
+  "version": "0.1.0",
+  "description": "Secure Mustache templating with human-friendly parsing errors",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "lab -v -t 100 -I require -a @hapi/code",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabriel-pinheiro/superstache.git"
+  },
+  "keywords": [
+    "mustache",
+    "parser",
+    "compiler",
+    "interpreter",
+    "handlebars"
+  ],
+  "author": "Gabriel Pinheiro <gabrielctpinheiro@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/gabriel-pinheiro/superstache/issues"
+  },
+  "homepage": "https://github.com/gabriel-pinheiro/superstache#readme",
+  "devDependencies": {
+    "@hapi/code": "^8.0.3",
+    "@hapi/lab": "^24.3.2",
+    "@types/node": "^16.9.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "pierrejs": "^0.2.0"
+  }
+}
