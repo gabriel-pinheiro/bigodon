@@ -1,7 +1,7 @@
 {
   "name": "superstache",
   "version": "0.1.0",
-  "description": "Secure Mustache templating with human-friendly parsing errors",
+  "description": "Secure Mustache templating for user-provided templates with human-friendly parsing errors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
