@@ -24,4 +24,10 @@ export type TemplateStatement = {
     statements: Statement[];
 };
 
-export type Statement = TextStatement | CommentStatement | ExpressionStatement | MustacheStatement | TemplateStatement;
+export type LiteralStatement = {
+    type: 'LITERAL';
+    value: string | number | boolean | null | undefined;
+};
+
+export type Statement = TextStatement | LiteralStatement | CommentStatement |
+                        ExpressionStatement | MustacheStatement | TemplateStatement;
