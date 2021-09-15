@@ -167,6 +167,7 @@ describe('parser', () => {
             expect(() => parse('foo bar)')).to.throw(/this parenthesis wasn't opened/i);
             expect(() => parse('true)')).to.throw(/this parenthesis wasn't opened/i);
             expect(() => parse('foo (bar')).to.throw(/make sure every parenthesis was closed/i);
+            expect(() => parse('foo (true')).to.throw(/make sure every parenthesis was closed/i);
             expect(() => parse('foo ()')).to.throw(/expected literal, helper or context path/i);
             expect(() => parse('foo !')).to.throw(/expected expression parameters or "}}"/i);
         });

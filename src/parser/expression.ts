@@ -39,13 +39,6 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
         return stmt;
     };
 
-    const succeed = () => {
-        if(stack.length > 1) {
-            throw new Error('Expected ")", make sure every parenthesis was closed');
-        }
-        return expressionFromStack(stack[0]);
-    };
-
     /* $lab:coverage:off$ */
     while(true) {
     /* $lab:coverage:on$ */
@@ -75,13 +68,16 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
 
                 const end = yield Pr.optional(peekEnd);
                 if(end) {
-                    return succeed();
+                    if(stack.length > 1) {
+                        yield Pr.fail('Expected ")", make sure every parenthesis was closed');
+                    }
+                    return expressionFromStack(stack[0]);
                 }
 
                 const subExprEnd = yield Pr.optional(Pr.string(')'));
                 if(subExprEnd) {
                     if(stack.length <= 1) {
-                        throw new Error('Unexpected ")", this parenthesis wasn\'t opened');
+                        yield Pr.fail('Unexpected ")", this parenthesis wasn\'t opened');
                     }
 
                     const expr = stack.pop();
@@ -98,7 +94,10 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
 
                 const end = yield Pr.optional(peekEnd);
                 if(end) {
-                    return succeed();
+                    if(stack.length > 1) {
+                        yield Pr.fail('Expected ")", make sure every parenthesis was closed');
+                    }
+                    return expressionFromStack(stack[0]);
                 }
 
                 const param = yield Pr.optional(Pr.either<Statement>($literal, path));
@@ -118,7 +117,7 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
                 const subExprEnd = yield Pr.optional(Pr.string(')'));
                 if(subExprEnd) {
                     if(stack.length <= 1) {
-                        throw new Error('Unexpected ")", this parenthesis wasn\'t opened');
+                        yield Pr.fail('Unexpected ")", this parenthesis wasn\'t opened');
                     }
 
                     const expr = stack.pop();
