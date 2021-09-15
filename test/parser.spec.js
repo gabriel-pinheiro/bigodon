@@ -2,6 +2,7 @@ const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
 const { parse } = require('..');
+const { VERSION } = require('../dist/parser/index');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -12,6 +13,7 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            version: VERSION,
             statements: [{
                 type: 'TEXT',
                 value: 'Hello World!',
@@ -24,6 +26,7 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            version: VERSION,
             statements: [{
                 type: 'MUSTACHE',
                 expression: {
@@ -43,6 +46,7 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            version: VERSION,
             statements: [{
                 type: 'TEXT',
                 value: 'foo',
@@ -64,6 +68,7 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             "type": "TEMPLATE",
+            "version": VERSION,
             "statements": [{
                     "type": "COMMENT",
                     "value": " Greeting user "
@@ -106,6 +111,7 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            version: VERSION,
             statements: [{
                 type: 'TEXT',
                 value: 'hello {{ world',

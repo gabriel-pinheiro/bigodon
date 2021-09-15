@@ -21,6 +21,7 @@ export type MustacheStatement = {
 
 export type TemplateStatement = {
     type: 'TEMPLATE';
+    version: number;
     statements: Statement[];
 };
 

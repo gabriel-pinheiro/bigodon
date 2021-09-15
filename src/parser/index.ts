@@ -7,6 +7,8 @@ import {
     optionalSpaces, peek, text, char
 } from './utils';
 
+export const VERSION = 1;
+
 export const $text: Parser<Statement> = text
     .map((value): TextStatement => ({ type: 'TEXT', value }))
     .withName('text');
@@ -41,4 +43,8 @@ export const $statement: Parser<Statement> = Pr.either(
 );
 
 export const $template: Parser<TemplateStatement> = Pr.manyUntilEnd($statement)
-    .map((statements): TemplateStatement => ({ type: 'TEMPLATE', statements }));
+    .map((statements): TemplateStatement => ({
+        type: 'TEMPLATE',
+        version: VERSION,
+        statements,
+    }));
