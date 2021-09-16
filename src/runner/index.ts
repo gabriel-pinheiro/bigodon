@@ -76,7 +76,7 @@ function runPathExpression(expression: ExpressionStatement, context: object): st
     let ctx = context;
 
     for(const key of path) {
-        if(typeof ctx !== 'object' || UNSAFE_KEYS.includes(key)) {
+        if(ctx === null || typeof ctx !== 'object' || UNSAFE_KEYS.includes(key)) {
             // TODO track warn
             return '';
         }
