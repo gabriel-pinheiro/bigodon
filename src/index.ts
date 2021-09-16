@@ -1,3 +1,13 @@
-import { $template } from "./parser";
+import { $template } from './parser';
+import { run } from './runner';
 
-export const parse = $template.parse.bind($template);
+const parse = $template.parse.bind($template);
+function compile(template: string): (context: object) => string {
+    const ast = parse(template);
+
+    return (context: object) => {
+        return run(ast, context);
+    };
+}
+
+export { compile, parse, run };
