@@ -62,7 +62,7 @@ describe('runner', () => {
         expect(templ({ name: {
             __proto__: 'foo',
             constructor: 'bar',
-        } })).to.equal('Hello, George Schmidt!');
+        } })).to.equal('Hello,  !');
     });
 
     it('should ignore unknown statements', () => {
