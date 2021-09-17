@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { deepCloneNullPrototype } = require('../dist/utils');
+const { deepCloneNullPrototype, ensure } = require('../dist/utils');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -44,6 +44,15 @@ describe('utils', () => {
 
             expect(clone.__proto__).to.be.undefined();
             expect(clone.constructor).to.be.undefined();
+        });
+    });
+
+    describe('ensure', () => {
+        it('should not throw with true', () => {
+            expect(() => ensure(true, 'yada')).to.not.throw();
+        });
+        it('should throw with false', () => {
+            expect(() => ensure(false, 'yada')).to.throw('yada');
         });
     });
 });

@@ -3,50 +3,52 @@ import { deepCloneNullPrototype } from "../utils";
 import { runHelperExpression } from "./helper";
 import { runPathExpression } from "./path-expression";
 
+export type LiteralValue = string | number | boolean | null | undefined | object;
+
 const MIN_VERSION = 1;
 const MAX_VERSION = 1;
 
-export function run(ast: TemplateStatement, context: object = {}): string {
+export async function run(ast: TemplateStatement, context: object = {}): Promise<string> {
     if(ast.version < MIN_VERSION || ast.version > MAX_VERSION) {
         throw new Error(`Unsupported AST version ${ast.version}, parse it again to generate a new AST`);
     }
 
     const ctx = deepCloneNullPrototype(context);
-    const statementResults = ast.statements.map(s => runStatement(s, ctx));
-    return statementResults.join('');
-}
+    let result = '';
 
-function runStatement(statement: Statement, context: object): string {
-    try {
-        return _runStatement(statement, context);
-    } catch(e) {
-        // TODO track warn
-        return '';
+    for(const statement of ast.statements) {
+        const stmtResult = await runStatement(statement, ctx);
+        if(stmtResult === null || typeof stmtResult === 'undefined') {
+            continue;
+        }
+        result += String(stmtResult);
     }
+
+    return result;
 }
 
-function _runStatement(statement: Statement, context: object): string {
+export async function runStatement(statement: Statement, context: object): Promise<LiteralValue> {
     switch(statement.type) {
         case 'TEXT':
             return statement.value;
         case 'COMMENT':
-            return '';
+            return null;
         case 'LITERAL':
-            return String(statement.value);
+            return statement.value;
         case 'MUSTACHE':
-            return runStatement(statement.expression, context);
+            return await runStatement(statement.expression, context);
         case 'EXPRESSION':
-            return runExpression(statement, context);
+            return await runExpression(statement, context);
         default:
-            // TODO track warn
-            throw new Error(`Unsupported statement type ${statement.type}`);
+            // TODO track warn unsupported statement type
+            return null;
     }
 }
 
-function runExpression(expression: ExpressionStatement, context: object): string {
+async function runExpression(expression: ExpressionStatement, context: object): Promise<LiteralValue> {
     if(expression.params.length === 0) {
         return runPathExpression(expression, context);
     }
 
-    return runHelperExpression(expression, context);
+    return await runHelperExpression(expression, context);
 }

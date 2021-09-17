@@ -24,3 +24,9 @@ export function deepCloneNullPrototype(obj: object): object {
 
     return clone;
 }
+
+export function ensure(condition: boolean, message: string): void {
+    if(!condition) {
+        throw new Error(message);
+    }
+}
