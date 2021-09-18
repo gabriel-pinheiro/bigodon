@@ -1,7 +1,7 @@
 {
   "name": "bigodon",
   "version": "0.1.0",
-  "description": "Secure Handlebars (Mustache) templating for user-provided templates with async support and human-friendly parsing errors",
+  "description": "Secure Handlebars (Mustache) templating for user-provided templates with async helpers support and human-friendly parsing errors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
