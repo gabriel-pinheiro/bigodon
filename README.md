@@ -6,7 +6,7 @@ Secure Handlebars (Mustache) templating for user-provided templates with async h
 ## Features
 - [x] Handlebars dot notation inside mustaches (`{{foo.bar}}`)
 - [x] Handlebars literal values (`{{add 5 6}}`)
-- [x] Safely evaluate user-provided templates. (Templates aren't converted to JavaScript, it's interpreted by bigodon)
+- [x] Safely evaluate user-provided templates. (Templates aren't transpiled to JavaScript, they're interpreted by bigodon)
 - [x] Comments (`{{! ... }}`)
 - [x] Nested expressions (`{{capitalize (append data.firstName data.secondName)}}`)
 - [x] Async helpers
