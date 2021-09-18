@@ -17,7 +17,7 @@ function hDefault<T>(value: T | null | undefined, defaultValue: T): T {
     return value ?? defaultValue;
 }
 
-export default Object.assign(Object.create(null), {
+export const helpers = Object.assign(Object.create(null), {
     append,
     upper,
     default: hDefault,

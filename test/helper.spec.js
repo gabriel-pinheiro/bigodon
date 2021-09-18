@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { compile } = require('..');
+const { compile, default: Bigodon } = require('..');
 const { VERSION } = require('../dist/parser/index');
 
 const { describe, it } = exports.lab = Lab.script();
@@ -30,6 +30,41 @@ describe('runner', () => {
         it('should not allow unsafe keys as helper names', async () => {
             const templ = compile('Hello, {{__proto__ "Schmidt" }}!');
             expect(templ()).to.reject(/helper __proto__ not allowed/i);
+        });
+
+        it('should run extra helpers', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('add', (a, b) => a + b);
+            const templ = bigodon.compile('{{add 1 2}}');
+            const result = await templ(bigodon);
+            expect(result).to.equal('3');
+        });
+
+        it('should prioritize extra helpers', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('upper', () => 5);
+            const templ = bigodon.compile('{{upper "hello"}}');
+            const result = await templ(bigodon);
+            expect(result).to.equal('5');
+        });
+
+        it('should preserve helper response types', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('add', (a, b) => a + b);
+            const templ = bigodon.compile('{{add (add 1 2) 4}}');
+            const result = await templ(bigodon);
+            expect(result).to.equal('7');
+        });
+
+        it('should run async helpers in series', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('wait', time => new Promise(resolve => setTimeout(resolve, time)));
+            const templ = bigodon.compile('{{wait 20}}{{wait 30}}');
+            const start = Date.now();
+            await templ(bigodon);
+            const deltaT = Date.now() - start;
+            expect(deltaT).to.be.at.least(49);
+            expect(deltaT).to.be.at.most(59);
         });
     });
 
@@ -77,8 +112,5 @@ describe('runner', () => {
             expect(await templ({})).to.equal('bar');
             expect(await templ({ foo: 0 })).to.equal('0');
         });
-
-        // TODO test helper types are preserved (add (add 1 1) 1)
-        // TODO test async are run in series
     });
 });

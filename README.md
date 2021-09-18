@@ -61,3 +61,41 @@ async function main() {
 }
 main().catch(console.error);
 ```
+
+## Helpers
+
+To add extra helpers, you need to instantiate your own `bigodon` object.
+
+### JavaScript
+
+```javascript
+const Bigodon = require('bigodon').default;
+const bigodon = new Bigodon();
+
+bigodon.addHelper('add', (a, b) => a + b);
+
+async function main() {
+    const source = '1 + 1 is {{add 1 1}}!';
+    const template = bigodon.compile(source); // Using our bigodon instance instead of the default compile
+    console.log(await template()); // 1 + 1 is 2!
+}
+
+main().catch(console.error);
+```
+
+### TypeScript
+
+```typescript
+import Bigodon from 'bigodon';
+const bigodon = new Bigodon();
+
+bigodon.addHelper('add', (a: number, b: number): number => a + b);
+
+async function main() {
+    const source = '1 + 1 is {{add 1 1}}!';
+    const template = bigodon.compile(source); // Using our bigodon instance instead of the default compile
+    console.log(await template()); // 1 + 1 is 2!
+}
+
+main().catch(console.error);
+```
