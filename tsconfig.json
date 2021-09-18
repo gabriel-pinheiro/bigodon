@@ -1,16 +1,15 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "removeComments": false,
-      "target": "es2019",
-      "sourceMap": false,
-      "declaration": true,
-      "outDir": "./dist",
-      "baseUrl": "./",
-      "incremental": true
-    },
-    "include": [
-      "src/**/*"
-    ]
-  }
-  
+  "compilerOptions": {
+    "module": "commonjs",
+    "removeComments": false,
+    "target": "es2019",
+    "sourceMap": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
