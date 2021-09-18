@@ -29,14 +29,18 @@ npm install bigodon
 ```javascript
 const { compile } = require('bigodon');
 
-const source = 'Hello, {{name}}!';
-const template = compile(source);
+async function main() {
+    const source = 'Hello, {{name}}!';
+    const template = compile(source);
 
-const result = template({
-    name: 'George'
-});
+    const result = await template({
+        name: 'George'
+    });
 
-console.log(result); // Hello, George!
+    console.log(result); // Hello, George!
+}
+
+main().catch(console.error);
 ```
 
 Or, if you want to split compilation from execution between services or cache the parsed AST:
@@ -48,9 +52,12 @@ const ast = parse(source); // This will return a JSON object that can be persist
 
 
 // In another process or later:
-const result = run(ast, {
-    name: 'George'
-});
+async function main() {
+    const result = await run(ast, {
+        name: 'George'
+    });
 
-console.log(result); // Hello, George!
+    console.log(result); // Hello, George!
+}
+main().catch(console.error);
 ```
