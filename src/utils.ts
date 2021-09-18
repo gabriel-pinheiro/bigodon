@@ -1,9 +1,9 @@
-export const UNSAFE_KEYS = [
+export const UNSAFE_KEYS = new Set([
     '__proto__',
     'constructor',
     'prototype',
     'hasOwnProperty',
-];
+]);
 
 export function deepCloneNullPrototype(obj: object): object {
     if(Array.isArray(obj)) {
@@ -16,7 +16,7 @@ export function deepCloneNullPrototype(obj: object): object {
 
     const clone = Object.create(null);
     for(const key in obj) {
-        if(UNSAFE_KEYS.includes(key)) {
+        if(UNSAFE_KEYS.has(key)) {
             continue;
         }
         clone[key] = deepCloneNullPrototype(obj[key]);

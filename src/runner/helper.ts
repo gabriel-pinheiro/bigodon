@@ -4,7 +4,7 @@ import { helpers } from "./helpers";
 import { UNSAFE_KEYS } from "../utils";
 
 export async function runHelperExpression(expression: ExpressionStatement, context: object): Promise<LiteralValue> {
-    if(UNSAFE_KEYS.includes(expression.path)) {
+    if(UNSAFE_KEYS.has(expression.path)) {
         throw new Error(`Helper ${expression.path} not allowed`);
     }
 
