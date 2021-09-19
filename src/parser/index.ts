@@ -1,13 +1,28 @@
 import Pr, { Parser } from 'pierrejs';
-import { $block } from './block';
 import { $expression } from './expression';
-import { CommentStatement, Statement, TemplateStatement, TextStatement } from './statements';
+import { BlockStatement, CommentStatement, ExpressionStatement, LiteralStatement, Statement, TemplateStatement, TextStatement } from './statements';
 import {
     atPos, closeMustache, openMustache,
     optionalSpaces, peek, text, char
 } from './utils';
 
-export const VERSION = 1;
+const topOfStack = <T>(stack: T[]): T => stack[stack.length - 1];
+const topOfStackStmts = (stack: (TemplateStatement | BlockStatement)[]): Statement[] => {
+    const top = stack[stack.length - 1];
+    if ('elseStatements' in top) {
+        return top.elseStatements;
+    }
+    return top.statements;
+};
+
+const buildBlock = (expression: ExpressionStatement, isNegated: boolean): BlockStatement => ({
+    type: 'BLOCK',
+    isNegated,
+    expression,
+    statements: [],
+});
+
+export const VERSION = 2;
 
 export const $text: Parser<Statement> = text
     .map((value): TextStatement => ({ type: 'TEXT', value }))
@@ -18,33 +33,101 @@ export const $comment: Parser<Statement> = Pr.all(char, text)
     .map((value): CommentStatement => ({ type: 'COMMENT', value }))
     .withName('comment');
 
-const mustache = $expression.map(expression => ({
+const $mustache: Parser<Statement> = $expression.map(expression => ({
     type: 'MUSTACHE',
     expression,
 }));
 
-export const $mustache = openMustache
-    .pipe(() => peek)
-    .pipe(char => {
-        switch(char) {
-            case '!': return $comment;
-            case '#': return $block;
-            case '^': return $block;
-            case '/': return Pr.fail('Unexpected block end');
-            default:  return mustache;
-        }
-    })
-    .pipe(content => optionalSpaces.map(() => content))
-    .pipe(content => closeMustache.map(() => content));
-
-export const $statement: Parser<Statement> = Pr.either(
-    $mustache,
-    $text,
-);
-
-export const $template: Parser<TemplateStatement> = Pr.manyUntilEnd($statement)
-    .map((statements): TemplateStatement => ({
+export const $template = Pr.context('mustache', function *() {
+    const stack: [TemplateStatement, ...BlockStatement[]] = [{
         type: 'TEMPLATE',
         version: VERSION,
-        statements,
-    }));
+        statements: [],
+    }];
+
+    /* $lab:coverage:off$ */
+    while(true) {
+    /* $lab:coverage:on$ */
+        const txt = yield Pr.optional($text);
+        if(txt) {
+            topOfStackStmts(stack).push(txt);
+            // no need to `continue`, two texts in a row aren't possible
+        }
+
+        const open = yield Pr.optional(openMustache);
+        if(open) {
+            switch(yield peek) {
+                case '!': {
+                    topOfStackStmts(stack).push(yield $comment);
+                    break;
+                }
+
+                case '#':
+                case '^': {
+                    const typeChar = yield char;
+                    const expression: ExpressionStatement | LiteralStatement = yield $expression;
+                    if(expression.type === 'LITERAL') {
+                        yield Pr.fail(`Blocks must receive path expressions or helpers. Literal blocks are not allowed.`);
+                        // Never happens, just for typescript to know that below here, expression is not LiteralStatement
+                        /* $lab:coverage:off$ */
+                        return;
+                        /* $lab:coverage:on$ */
+                    }
+
+                    stack.push(buildBlock(expression, typeChar === '^'));
+                    break;
+                }
+
+                case '/': {
+                    yield char; // Consuming '/'
+                    const expression: ExpressionStatement | LiteralStatement = yield $expression;
+                    if(expression.type === 'LITERAL') {
+                        yield Pr.fail(`Unexpected {{/${expression.value}}}. Literal blocks are not allowed.`);
+                        // Never happens, just for typescript to know that below here, expression is not LiteralStatement
+                        /* $lab:coverage:off$ */
+                        return;
+                        /* $lab:coverage:on$ */
+                    }
+                    if(expression.params.length > 0) {
+                        yield Pr.fail(`Closing blocks cannot have parameters`);
+                    }
+                    const name = expression.path;
+                    if(stack.length <= 1) {
+                        yield Pr.fail(`Unexpected {{/${name}}}, this block wasn't opened`);
+                    }
+
+                    const block = stack.pop() as BlockStatement;
+                    if(block.expression.path !== name) {
+                        yield Pr.fail(`Unexpected {{/${name}}}, this block was opened as {{${block.expression.path}}}`);
+                    }
+
+                    topOfStackStmts(stack).push(block);
+                    break;
+                }
+
+                default: {
+                    topOfStackStmts(stack).push(yield $mustache);
+                    break;
+                }
+            }
+
+            yield optionalSpaces;
+            yield closeMustache;
+            continue;
+        }
+
+        const end = yield Pr.optional(Pr.end());
+        if (end) {
+            break;
+        }
+
+        yield Pr.fail('Unexpected end of file');
+    }
+
+    if(stack.length > 1) {
+        const block = topOfStack(stack) as BlockStatement;
+        yield Pr.fail(`Expected {{/${block.expression.path}}}, make sure this block was closed`);
+    }
+
+    return stack[0];
+});

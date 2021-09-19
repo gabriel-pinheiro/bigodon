@@ -19,6 +19,14 @@ export type MustacheStatement = {
     expression: ExpressionStatement | LiteralStatement;
 };
 
+export type BlockStatement = {
+    type: 'BLOCK';
+    isNegated: boolean;
+    expression: ExpressionStatement;
+    statements: Statement[];
+    elseStatements?: Statement[];
+};
+
 export type TemplateStatement = {
     type: 'TEMPLATE';
     version: number;
@@ -30,5 +38,5 @@ export type LiteralStatement = {
     value: string | number | boolean | null | undefined;
 };
 
-export type Statement = TextStatement | LiteralStatement | CommentStatement |
+export type Statement = TextStatement | LiteralStatement | CommentStatement | BlockStatement |
                         ExpressionStatement | MustacheStatement | TemplateStatement;

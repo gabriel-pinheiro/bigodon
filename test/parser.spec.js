@@ -8,6 +8,13 @@ const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
 
 describe('parser', () => {
+    it('should parse empty', () => {
+        expect(parse('')).to.equal({
+            type: 'TEMPLATE',
+            version: VERSION,
+            statements: [],
+        });
+    });
     it('should parse text', () => {
         const text = 'Hello World!';
         const result = parse(text);
@@ -121,7 +128,7 @@ describe('parser', () => {
 
     it('should fail on unexpected end block', () => {
         const text = '{{/foo}}';
-        expect(() => parse(text)).to.throw(/unexpected block end/i);
+        expect(() => parse(text)).to.throw(/this block wasn.t opened/i);
     });
 
     it('should fail on mustache inside mustache', () => {
