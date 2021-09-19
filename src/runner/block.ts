@@ -7,14 +7,28 @@ export async function runBlock(block: BlockStatement,
     const value = await runStatement(block.expression, context, extraHelpers);
     // Negated blocks
     if(block.isNegated) {
+        // Value is true and there is an else block
+        if(value && Array.isArray(block.elseStatements)) {
+            return await runStatements(block.elseStatements, context, extraHelpers);
+        }
+
+        // Value is true and there is no else block
         if(value) {
             return null;
         }
+
+        // Value is false
         return await runStatements(block.statements, context, extraHelpers);
     }
 
     // Falsy value or empty array
     if(!value || (Array.isArray(value) && value.length === 0)) {
+        // Value is false and there is an else block
+        if(Array.isArray(block.elseStatements)) {
+            return await runStatements(block.elseStatements, context, extraHelpers);
+        }
+
+        // Value is false and there is no else block
         return null;
     }
 

@@ -105,7 +105,25 @@ describe('runner', () => {
             expect(await templ()).to.equal('');
         });
 
-        // TODO should run else block with falsy value
+        it('should run else block with falsy value', async () => {
+            const templ = compile('{{#val}}foo{{else}}bar{{/val}}');
+            expect(await templ({ val: false })).to.equal('bar');
+        });
+
+        it('should not run else block with truthy value', async () => {
+            const templ = compile('{{#val}}foo{{else}}bar{{/val}}');
+            expect(await templ({ val: true })).to.equal('foo');
+        });
+
+        it('should run else block with empty arrays', async () => {
+            const templ = compile('{{#val}}foo{{else}}bar{{/val}}');
+            expect(await templ({ val: [] })).to.equal('bar');
+        });
+
+        it('should not run else block with non-empty arrays', async () => {
+            const templ = compile('{{#val}}foo{{else}}bar{{/val}}');
+            expect(await templ({ val: [1] })).to.equal('foo');
+        });
 
         it('should run statements N times with array', async () => {
             const templ = compile('{{#val}}foo{{/val}}');
@@ -136,11 +154,11 @@ describe('runner', () => {
 
         // TODO should let access parent context with ../
         // TODO should let access current object with .
-        // TODO should ignore else with non-empty array
-        // TODO should run else with empty array
-        // TODO should run else with parent context
-        // TODO should run else of negated blocks
-        // TODO should run else of negated blocks with parent context always
+
+        it('should run else block with parent context', async () => {
+            const templ = compile('{{#val}}nah{{else}}{{foo}}{{/val}}');
+            expect(await templ({ val: false, foo: 'bar' })).to.equal('bar');
+        });
 
         it('should run negated blocks', async () => {
             const templ = compile('{{^val}}foo{{/val}}');
@@ -148,6 +166,16 @@ describe('runner', () => {
             expect(await templ({ val: '' })).to.equal('foo');
             expect(await templ({ val: true })).to.equal('');
             expect(await templ({ val: 'a' })).to.equal('');
+        });
+
+        it('should run else of negated blocks', async () => {
+            const templ = compile('{{^val}}foo{{else}}bar{{/val}}');
+            expect(await templ({ val: true })).to.equal('bar');
+        });
+
+        it('should run else of negated blocks with parent context', async () => {
+            const templ = compile('{{^val}}foo{{else}}{{foo}}{{/val}}');
+            expect(await templ({ val: { foo: 'wrong' }, foo: 'bar' })).to.equal('bar');
         });
 
         it('should run negated blocks with parent context always', async () => {
