@@ -16,6 +16,7 @@ Secure Handlebars (Mustache) templating for user-provided templates with async h
 - [ ] Parent and current context (`{{#list}}{{../name}} {{.}}{{/list}}`)
 - [ ] String with simple quotes
 - [ ] Parameterless helpers (`{{uuid}}`)
+- [ ] Nested blocks (`{{#eq foo 1}}...{{else eq foo 2}}...{{else}}...{{/eq}}`)
 - [ ] Documentation
 
 ## Installation

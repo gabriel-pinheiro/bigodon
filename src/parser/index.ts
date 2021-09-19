@@ -1,6 +1,6 @@
 import Pr, { Parser } from 'pierrejs';
 import { $expression } from './expression';
-import { BlockStatement, CommentStatement, ExpressionStatement, LiteralStatement, Statement, TemplateStatement, TextStatement } from './statements';
+import { BlockStatement, CommentStatement, ExpressionStatement, LiteralStatement, MustacheStatement, Statement, TemplateStatement, TextStatement } from './statements';
 import {
     atPos, closeMustache, openMustache,
     optionalSpaces, peek, text, char
@@ -106,7 +106,29 @@ export const $template = Pr.context('mustache', function *() {
                 }
 
                 default: {
-                    topOfStackStmts(stack).push(yield $mustache);
+                    const stmt: MustacheStatement = yield $mustache;
+
+                    // Normal mustache
+                    if(stmt.expression.type !== 'EXPRESSION' || stmt.expression.path !== 'else') {
+                        topOfStackStmts(stack).push(stmt);
+                        break;
+                    }
+
+                    // Else block
+                    if(stmt.expression.params.length > 0) {
+                        yield Pr.fail('{{else}} blocks cannot have parameters');
+                    }
+
+                    if(stack.length <= 1) {
+                        yield Pr.fail('{{else}} can only exist inside blocks');
+                    }
+
+                    const top = topOfStack(stack) as BlockStatement;
+                    if(Array.isArray(top.elseStatements)) {
+                        yield Pr.fail(`an {{else}} block was already defined for the block ${top.expression.path}`);
+                    }
+
+                    top.elseStatements = [];
                     break;
                 }
             }
