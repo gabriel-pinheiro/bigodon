@@ -10,12 +10,13 @@ Secure Handlebars (Mustache) templating for user-provided templates with async h
 - [x] Comments (`{{! ... }}`)
 - [x] Nested expressions (`{{capitalize (append data.firstName data.secondName)}}`)
 - [x] Async helpers
+- [x] Blocks (`{{#name}}...{{/name}}`)
+- [x] Inverted blocks (`{{^name}}...{{/name}}`)
+- [ ] Else blocks (`{{#name}}...{{else}}...{{/name}}`)
+- [ ] Parent and current context (`{{#list}}{{../name}} {{.}}{{/list}}`)
 - [ ] String with simple quotes
 - [ ] Parameterless helpers (`{{uuid}}`)
 - [ ] Documentation
-- [ ] Blocks (`{{#name}}...{{/name}}`)
-- [ ] Inverted blocks (`{{^name}}...{{/name}}`)
-- [ ] Else blocks (`{{#name}}...{{else}}...{{/name}}`)
 
 ## Installation
 
@@ -95,6 +96,30 @@ async function main() {
     const source = '1 + 1 is {{add 1 1}}!';
     const template = bigodon.compile(source); // Using our bigodon instance instead of the default compile
     console.log(await template()); // 1 + 1 is 2!
+}
+
+main().catch(console.error);
+```
+
+## Block helpers
+
+To add block helpers, simply create a helper that returns:
+- A falsy value or an empty array to indicate that the block should be skipped or that the else block should be rendered
+- An object to indicate that the block should run with that context
+- An array to indicate that the block should run for each item of the array as context
+- A truthy value to indicate that the block should be rendered with parent context
+
+```javascript
+const Bigodon = require('bigodon').default;
+const bigodon = new Bigodon();
+
+bigodon.addHelper('isEven', (value) => value % 2 === 0);
+
+async function main() {
+    const source = '{{num}} is {{#isEven num}}even{{else}}odd{{/isEven}}';
+    const template = bigodon.compile(source);
+    console.log(await template({ num: 2 })); // 2 is even
+    console.log(await template({ num: 3 })); // 3 is odd
 }
 
 main().catch(console.error);
