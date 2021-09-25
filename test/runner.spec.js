@@ -66,6 +66,28 @@ describe('runner', () => {
             } })).to.equal('Hello,  !');
         });
 
+        it('should not return Object prototype keys', async () => {
+            const templ = compile('{{ hasOwnProperty }}{{ toString }}{{ obj.toString }}{{ obj.hasOwnProperty }}');
+            expect(await templ({ obj: {} })).to.equal('');
+        });
+
+        it('should not return Array prototype keys', async () => {
+            const templ = compile('{{ arr.length }}{{ arr.toString }}');
+            expect(await templ({ arr: [] })).to.equal('');
+        });
+
+        it('should not return String prototype keys', async () => {
+            const templ = compile('{{ str.length }}{{ str.toString }}');
+            expect(await templ({ str: 'yada' })).to.equal('');
+        });
+
+        it('should not return Number prototype keys', async () => {
+            const templ = compile('{{ num.toString }}{{ num.toFixed }}');
+            expect(await templ({ num: 1 })).to.equal('');
+        });
+
+        // TODO ssti tests with current object and parent (., ../)
+
         it('should ignore unknown statements', async () => {
             const result = await run({
                 type: 'TEMPLATE',
