@@ -37,12 +37,7 @@ export async function runBlock(block: BlockStatement,
         let result = '';
 
         for(const item of value) {
-            let ctx = context;
-            if(typeof item === 'object' && item !== null && !Array.isArray(item)) {
-                ctx = item;
-            }
-
-            result += await runStatements(block.statements, ctx, extraHelpers);
+            result += await runStatements(block.statements, item, extraHelpers);
         }
 
         return result;

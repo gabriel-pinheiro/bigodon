@@ -3,6 +3,10 @@ import { ExpressionStatement } from "../parser/statements";
 import { UNSAFE_KEYS } from "../utils";
 
 export function runPathExpression(expression: ExpressionStatement, context: object): LiteralValue {
+    if(expression.path === '$this') {
+        return context;
+    }
+
     const path = expression.path.split('.');
     let ctx = context;
 

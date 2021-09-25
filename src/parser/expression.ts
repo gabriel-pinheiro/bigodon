@@ -17,7 +17,7 @@ enum State {
 const topOfStack = <T>(stack: T[]): T => stack[stack.length - 1];
 
 const peekEnd = Pr.lookAhead(Pr.string('}}'));
-const path: Parser<ExpressionStatement> = Pr.regex('context path', /^[a-zA-Z0-9\-_\.]+/).map(path => ({
+const path: Parser<ExpressionStatement> = Pr.regex('context path', /^[a-zA-Z0-9\-_$\.]+/).map(path => ({
     type: 'EXPRESSION',
     path,
     params: [],

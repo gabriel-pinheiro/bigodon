@@ -86,8 +86,6 @@ describe('runner', () => {
             expect(await templ({ num: 1 })).to.equal('');
         });
 
-        // TODO ssti tests with current object and parent (., ../)
-
         it('should ignore unknown statements', async () => {
             const result = await run({
                 type: 'TEMPLATE',
@@ -169,13 +167,25 @@ describe('runner', () => {
             expect(await templ({ val: [{ foo: 'bar' }, { foo: 'baz' }], foo: 'wrong' })).to.equal('barbaz');
         });
 
-        it('should pass parent context for non-object array items', async () => {
+        it('should not pass parent context for array items', async () => {
             const templ = compile('{{#val}}{{foo}}{{/val}}');
-            expect(await templ({ val: [true, 'a', 1, null, []], foo: 'bar' })).to.equal('barbarbarbarbar');
+            expect(await templ({ val: [true, 'a', 1, null, []], foo: 'bar' })).to.equal('');
         });
 
-        // TODO should let access parent context with ../
-        // TODO should let access current object with .
+        it('should let access current object with $this', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('stringify', v => JSON.stringify(v));
+            const templ = bigodon.compile('{{#val}}{{stringify $this}}{{/val}}');
+            expect(await templ({ val: { foo: 'bar' }})).to.equal('{"foo":"bar"}');
+        });
+
+        it('should let access current array item with $this', async () => {
+            const templ = compile('{{#arr}}({{$this}}){{/arr}}');
+            expect(await templ({ arr: [1, 2, 3] })).to.equal('(1)(2)(3)');
+        });
+
+        // TODO should let access parent context with $parent
+        // TODO should let access root with $root
 
         it('should run else block with parent context', async () => {
             const templ = compile('{{#val}}nah{{else}}{{foo}}{{/val}}');

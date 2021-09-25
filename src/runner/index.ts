@@ -30,6 +30,10 @@ export async function runStatements(statements: Statement[],
         if(stmtResult === null || typeof stmtResult === 'undefined') {
             continue;
         }
+        if(typeof stmtResult === 'object') {
+            result += Object.prototype.toString.call(stmtResult);
+            continue;
+        }
         result += String(stmtResult);
     }
 
