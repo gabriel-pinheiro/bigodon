@@ -1,6 +1,7 @@
 import { ExpressionStatement, Statement, TemplateStatement } from "../parser/statements";
 import { deepCloneNullPrototype } from "../utils";
 import { runBlock } from "./block";
+import { Execution } from "./execution";
 import { runHelperExpression } from "./helper";
 import { runPathExpression } from "./path-expression";
 
@@ -17,16 +18,15 @@ export async function run(ast: TemplateStatement,
     }
 
     const ctx = deepCloneNullPrototype(context);
-    return await runStatements(ast.statements, ctx, extraHelpers);
+    const execution = Execution.of(ctx, extraHelpers);
+    return await runStatements(execution, ast.statements);
 }
 
-export async function runStatements(statements: Statement[],
-                                       context: object,
-                                  extraHelpers: Map<string, Function>): Promise<string> {
+export async function runStatements(execution: Execution, statements: Statement[]): Promise<string> {
     let result = '';
 
     for(const statement of statements) {
-        const stmtResult = await runStatement(statement, context, extraHelpers);
+        const stmtResult = await runStatement(execution, statement);
         if(stmtResult === null || typeof stmtResult === 'undefined') {
             continue;
         }
@@ -40,9 +40,7 @@ export async function runStatements(statements: Statement[],
     return result;
 }
 
-export async function runStatement(statement: Statement,
-                                     context: object,
-                                extraHelpers: Map<string, Function>): Promise<LiteralValue> {
+export async function runStatement(execution: Execution, statement: Statement): Promise<LiteralValue> {
     switch(statement.type) {
         case 'TEXT':
             return statement.value;
@@ -51,23 +49,21 @@ export async function runStatement(statement: Statement,
         case 'LITERAL':
             return statement.value;
         case 'MUSTACHE':
-            return await runStatement(statement.expression, context, extraHelpers);
+            return await runStatement(execution, statement.expression);
         case 'EXPRESSION':
-            return await runExpression(statement, context, extraHelpers);
+            return await runExpression(execution, statement);
         case 'BLOCK':
-            return await runBlock(statement, context, extraHelpers);
+            return await runBlock(execution, statement);
         default:
             // TODO track warn unsupported statement type
             return null;
     }
 }
 
-async function runExpression(expression: ExpressionStatement,
-                             context: object,
-                             extraHelpers: Map<string, Function>): Promise<LiteralValue> {
+async function runExpression(execution: Execution, expression: ExpressionStatement): Promise<LiteralValue> {
     if(expression.params.length === 0) {
-        return runPathExpression(expression, context);
+        return runPathExpression(execution, expression);
     }
 
-    return await runHelperExpression(expression, context, extraHelpers);
+    return await runHelperExpression(execution, expression);
 }

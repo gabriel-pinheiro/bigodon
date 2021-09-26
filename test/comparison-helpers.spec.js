@@ -174,6 +174,11 @@ describe('helpers', () => { describe('comparison', () => {
             const templ = compile('{{#if foo}}{{name}}{{else}}no{{/if}}');
             expect(await templ({ foo: { name: 'wrong' }, name: 'foo' })).to.equal('foo');
         });
+
+        it('should run only once', async () => {
+            const templ = compile('{{#if foo}}yes{{else}}no{{/if}}');
+            expect(await templ({ foo: [1, 2, 3] })).to.equal('yes');
+        });
     });
 
     describe('unless', () => {

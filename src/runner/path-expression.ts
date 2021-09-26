@@ -1,14 +1,15 @@
 import { LiteralValue } from ".";
 import { ExpressionStatement } from "../parser/statements";
 import { UNSAFE_KEYS } from "../utils";
+import { Execution } from "./execution";
 
-export function runPathExpression(expression: ExpressionStatement, context: object): LiteralValue {
+export function runPathExpression(execution: Execution, expression: ExpressionStatement): LiteralValue {
     if(expression.path === '$this') {
-        return context;
+        return execution.context;
     }
 
     const path = expression.path.split('.');
-    let ctx = context;
+    let ctx = execution.context;
 
     for(const key of path) {
         if(ctx === null || typeof ctx !== 'object' || Array.isArray(ctx) || UNSAFE_KEYS.has(key)) {

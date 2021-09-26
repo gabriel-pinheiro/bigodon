@@ -86,7 +86,13 @@ describe('runner', () => { describe('helper', () => {
         });
     });
 
-    // TODO test split
+    describe('split', () => {
+        it('should split correctly', async () => {
+            const templ = compile('{{#split "foo,bar,baz,qux" ","}}({{$this}}){{/split}}');
+            const result = await templ();
+            expect(result).to.equal('(foo)(bar)(baz)(qux)');
+        });
+    });
 
     describe('startsWith', () => {
         it('should return true for matching string', async () => {
