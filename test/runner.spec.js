@@ -198,26 +198,25 @@ describe('runner', () => {
             expect(await templ({ arr: [1, 2, 3] })).to.equal('(1)(2)(3)');
         });
 
-        // it('should let access $root for one level', async () => {
-        //     const templ = compile('{{#val}}{{foo}} {{$root.foo}}{{/val}}');
-        //     expect(await templ({ val: { foo: 'inside' }, foo: 'outside' })).to.equal('inside outside');
-        // });
+        it('should let access $root for one level', async () => {
+            const templ = compile('{{#val}}{{foo}} {{$root.foo}}{{/val}}');
+            expect(await templ({ val: { foo: 'inside' }, foo: 'outside' })).to.equal('inside outside');
+        });
 
-        // it('should let access $root for two levels', async () => {
-        //     const templ = compile('{{#val}}{{#other}}{{foo}} {{$root.foo}}{{/other}}{{/val}}');
-        //     expect(await templ({ val: { other: { foo: 'inside' }, foo: 'middle' }, foo: 'outside' })).to.equal('inside outside');
-        // });
+        it('should let access $root for two levels', async () => {
+            const templ = compile('{{#val}}{{#other}}{{foo}} {{$root.foo}}{{/other}}{{/val}}');
+            expect(await templ({ val: { other: { foo: 'inside' }, foo: 'middle' }, foo: 'outside' })).to.equal('inside outside');
+        });
 
-        // TODO implement $parent
-        // it('should let access $parent for one level', async () => {
-        //     const templ = compile('{{#val}}{{foo}} {{$parent.foo}}{{/val}}');
-        //     expect(await templ({ val: { foo: 'inside' }, foo: 'outside' })).to.equal('inside outside');
-        // });
+        it('should let access $parent for one level', async () => {
+            const templ = compile('{{#val}}{{foo}} {{$parent.foo}}{{/val}}');
+            expect(await templ({ val: { foo: 'inside' }, foo: 'outside' })).to.equal('inside outside');
+        });
 
-        // it('should let access $parent for two levels', async () => {
-        //     const templ = compile('{{#val}}{{#other}}{{foo}} {{$parent.foo}} {{$parent.$parent.foo}}{{/other}}{{/val}}');
-        //     expect(await templ({ val: { other: { foo: 'inside' }, foo: 'middle' }, foo: 'outside' })).to.equal('inside middle outside');
-        // });
+        it('should let access $parent for two levels', async () => {
+            const templ = compile('{{#val}}{{#other}}{{foo}} {{$parent.foo}} {{$parent.$parent.foo}}{{/other}}{{/val}}');
+            expect(await templ({ val: { other: { foo: 'inside' }, foo: 'middle' }, foo: 'outside' })).to.equal('inside middle outside');
+        });
 
         it('should run else block with parent context', async () => {
             const templ = compile('{{#val}}nah{{else}}{{foo}}{{/val}}');

@@ -1,6 +1,6 @@
 export class Execution {
     private constructor(
-        private readonly contexts: object[],
+        public readonly contexts: object[],
         public readonly extraHelpers: Map<string, Function>,
     ) { }
 
