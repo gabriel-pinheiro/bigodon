@@ -1,23 +1,27 @@
 # Bigodon
-Secure Handlebars (Mustache) templating for user-provided templates with async helpers support and human-friendly parsing errors.
+Secure Handlebars/Mustache templating for user-provided templates with async helpers support and human-friendly parsing errors.
 
-### ⚠️ This is a work in progress.
 
 ## Features
-- [x] Handlebars dot notation inside mustaches (`{{foo.bar}}`)
-- [x] Handlebars literal values (`{{add 5 6}}`)
-- [x] Safely evaluate user-provided templates. (Templates aren't transpiled to JavaScript, they're interpreted by bigodon)
-- [x] Comments (`{{! ... }}`)
-- [x] Nested expressions (`{{capitalize (append data.firstName data.secondName)}}`)
-- [x] Async helpers
-- [x] Blocks (`{{#name}}...{{/name}}`)
-- [x] Inverted blocks (`{{^name}}...{{/name}}`)
-- [x] Else blocks (`{{#name}}...{{else}}...{{/name}}`)
-- [x] Parent and current context (`{{#list}}{{$parent.name}} {{$this}}{{/list}}`)
-- [ ] String with simple quotes
-- [ ] Parameterless helpers (`{{uuid}}`)
-- [ ] Nested blocks (`{{#eq foo 1}}...{{else eq foo 2}}...{{else}}...{{/eq}}`)
-- [ ] Documentation
+
+As well as most Handlebars features like:
+- Handlebars dot notation inside mustaches (`{{foo.bar}}`)
+- Handlebars literal values (`{{add 5 6}}`)
+- Comments (`{{! ... }}`)
+- Nested expressions (`{{capitalize (append data.firstName data.secondName)}}`)
+- Blocks (`{{#name}}...{{/name}}`)
+- Inverted blocks (`{{^name}}...{{/name}}`)
+- Else blocks (`{{#name}}...{{else}}...{{/name}}`)
+- Parent and current context (`{{#list}}{{$parent.name}} {{$this}}{{/list}}`)
+
+Bigodon also supports:
+- Async helpers, you can await for requests, database access, file access and so on.
+- Safely evaluate user-provided templates. (Templates aren't transpiled to JavaScript, they're interpreted by Bigodon)
+- Much better performance.
+- Better error reporting.
+- Better native helpers.
+
+Bigodon is used in production by [Mocko](https://mocko.dev/).
 
 ## Installation
 
