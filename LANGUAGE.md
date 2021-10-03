@@ -8,7 +8,7 @@ You can access fields from the context in your template:
 
 Path expressions are mustaches (between `{{` and `}}`) that allow you to access fields from the context, here's an example:
 
-```mustache
+```hbs
 Hello, {{ name }}!
 ```
 
@@ -33,7 +33,7 @@ Hello, George!
 
 Path expressions can access nested objects with dot notation:
 
-```mustache
+```hbs
 Hey {{ name.first }} {{ name.last }}!
 ```
 
@@ -63,7 +63,7 @@ Hey George Smith!
 
 Comments are written between `{{!` and `}}`:
 
-```mustache
+```hbs
 {{! greeting the user }}
 Hello, {{ name }} :)
 ```
@@ -91,7 +91,7 @@ Hello, George :)
 
 Helpers are functions that can be called from within your templates. You can find **all the available helpers in [here](HELPERS.md)** and new helpers can also be defined [like this](LIB.md#helpers). Here's an example:
 
-```mustache
+```hbs
 Hello, {{capitalize name }}!
 ```
 
@@ -118,7 +118,7 @@ Note that spaces are optional inside mustaches, `{{name}}` is the same as `{{ na
 
 You can pass multiple arguments to helpers separated by spaces:
 
-```mustache
+```hbs
 Hello, {{default name "stranger"}}!
 ```
 
@@ -141,7 +141,7 @@ Hello, stranger!
 
 Expressions can be nested with parentheses, you can pass the return of a helper as a parameter to another one:
 
-```mustache
+```hbs
 Hello, {{default (capitalize name) "stranger"}}!
 ```
 
@@ -166,7 +166,7 @@ Hello, stranger!
 
 You can use blocks for conditionals. Blocks are written between `{{#` and `}}` and closed with `{{/` and `}}`, when given a truthy value they are executed, when given a falsy value they are ignored:
 
-```mustache
+```hbs
 {{#name}}
 Hello, {{ name }}!
 {{/name}}
@@ -195,7 +195,7 @@ Note that, for blocks, you cannot have a space between the opening mustache and 
 
 Blocks can have an else section, which is executed when the block is not truthy:
 
-```mustache
+```hbs
 {{#name}}
 Hello, {{ name }}!
 {{else}}
@@ -222,7 +222,7 @@ Hello, Stranger!
 
 You can also use helpers in blocks:
 
-```
+```hbs
 {{#eq (typeof name) "string"}}
 Hello, {{capitalize name }}!
 {{else}}
@@ -251,7 +251,7 @@ Invalid name
 
 You can also use blocks for loops. When given an array, the block will be executed for each element in the array. The context inside the block is changed to the item of the array:
 
-```mustache
+```hbs
 {{name}}, you got {{length comments }} comments:
 
 {{#comments}}
@@ -295,7 +295,7 @@ George, you got 2 comments:
 
 You can use the current item of the loop with `$this`:
 
-```mustache
+```hbs
 {{#keywords}}
 - {{ $this }}
 {{/keywords}}
@@ -324,7 +324,7 @@ You can use the current item of the loop with `$this`:
 
 You can use `$parent` to point to the parent context (you can use multiple parents like `$parent.$parent.foo`) and `$root` to point to the main context:
 
-```mustache
+```hbs
 {{name}}, you got {{length comments }} comments:
 
 {{#comments}}
@@ -370,7 +370,7 @@ George, you got 2 comments:
 
 You can use negated blocks for conditionals only. Replace `#` by `^` like so:
 
-```mustache
+```hbs
 {{^name}}
 You are not logged in
 {{/name}}
@@ -382,7 +382,7 @@ You are not logged in
 
 When given an object, a block will be rendered with it as the context:
 
-```mustache
+```hbs
 {{#parent}}
 Hello, {{ name }}!
 {{/parent}}
@@ -412,7 +412,7 @@ Hello, Alice!
 
 You can use the `if` helper to prevent that from happening:
 
-```mustache
+```hbs
 {{#if parent}}
 Hello, {{ name }}!
 {{/if}}
@@ -442,7 +442,7 @@ Hello, George!
 
 You can use the `with` helper to force an item as context even if it's not an object:
 
-```mustache
+```hbs
 {{#with parent}}
 Hello, {{ $this }}!
 {{/with}}

@@ -11,7 +11,7 @@ assignees: ''
 _Describe what isn't working as expected._
 
 **Template**
-```mustache
+```hbs
 Bigodon template that isn't working as expected
 ```
 

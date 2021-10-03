@@ -14,7 +14,7 @@ _Explain what the helper you're suggesting would do_
 _Show us scenarios in which this helper would be useful_
 
 **Examples**
-```mustache
+```hbs
 {{! Give us examples on how it would be used}}
 {{foo "bar"}}
 ```

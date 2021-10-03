@@ -109,7 +109,7 @@ From [comparison helpers](#Comparison-Helpers):
 
 #### Examples:
 
-```mustache
+```hbs
 Keywords:
 {{#each keywords}}
 - {{ $this }}
@@ -146,7 +146,7 @@ Keywords:
 
 </details>
 
-```mustache
+```hbs
 {{name}}, you got {{length comments }} comments:
 
 {{#each comments}}
@@ -198,7 +198,7 @@ George, you got 2 comments:
 - `isLast`: True if the current item is the last one.
 
 #### Example:
-```mustache
+```hbs
 {{#forEach items}}
     {{index}}: {{item}}{{^isLast}};{{else}}.{{/isLast}}
 {{/forEach}}
@@ -230,7 +230,7 @@ George, you got 2 comments:
 `or` returns true if any of the given arguments are truthy.
 
 #### Example:
-```mustache
+```hbs
 {{#or (eq food "apple") (eq food "banana") (eq food "orange")}}
     {{upper food}} is a fruit.
 {{else}}
