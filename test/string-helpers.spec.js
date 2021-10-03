@@ -6,7 +6,7 @@ const { compile } = require('../dist');
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
 
-describe('runner', () => { describe('helper', () => {
+describe('helpers', () => { describe('string', () => {
 
     describe('append', () => {
         it('should return empty for no params', async () => {
