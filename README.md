@@ -66,3 +66,5 @@ main().catch(console.error);
 
 ## Check how to use the lib [here](LIB.md)
 ## Check how to use the language [here](LANGUAGE.md)
+
+## Check the available helpers [here](HELPERS.md)

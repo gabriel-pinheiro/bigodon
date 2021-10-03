@@ -89,7 +89,7 @@ Hello, George :)
 
 ## Helpers
 
-Helpers are functions that can be called from within your templates. You can find all the available helpers in [here](HELPERS.md) and new helpers can also be defined [like this](LIB.md#helpers). Here's an example:
+Helpers are functions that can be called from within your templates. You can find **all the available helpers in [here](HELPERS.md)** and new helpers can also be defined [like this](LIB.md#helpers). Here's an example:
 
 ```mustache
 Hello, {{capitalize name }}!
