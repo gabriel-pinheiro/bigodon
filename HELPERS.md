@@ -100,3 +100,158 @@ From [comparison helpers](#Comparison-Helpers):
 - [default](#default): Returns the first argument that is not undefined or null. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L13); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L203-L228))
 - [coalesce](#coalesce): Alias of [default](#default).
 - [firstNonNull](#firstNonNull): Alias of [default](#default).
+
+## Examples
+
+### **each**
+
+`each` runs a block N times for the given array items as context. If provided with a non-array, it runs the block once with it as context.
+
+#### Examples:
+
+```mustache
+Keywords:
+{{#each keywords}}
+- {{ $this }}
+{{/each}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+With context `{"keywords": ["lorem", "ipsum", "dolor"]}` the output would be:
+```
+Keywords:
+- lorem
+- ipsum
+- dolor
+```
+
+With context `{"keywords": "foo"}` the output would be:
+```
+Keywords:
+- lorem
+```
+
+With context `{"keywords": []}` the output would be:
+```
+Keywords:
+```
+
+With context `{"keywords": null}` the output would be:
+```
+Keywords:
+- null
+```
+
+</details>
+
+```mustache
+{{name}}, you got {{length comments }} comments:
+
+{{#each comments}}
+    From {{author}} to {{$parent.name}}:
+    {{comment}}
+{{/each}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "name": "George",
+    "comments": [{
+        "author": "Alice",
+        "comment": "Nice presentation"
+    }, {
+        "author": "Bob",
+        "comment": "Thanks for the feedbacks"
+    }]
+}
+```
+
+### Generated output
+```
+George, you got 2 comments:
+
+
+    From Alice to George:
+    Nice presentation
+
+    From Bob to George:
+    Thanks for the feedbacks
+```
+
+</details>
+
+---
+
+### **forEach**
+
+`forEach` runs a block N times with information about the current item as context. The context will have:
+- `item`: The current item.
+- `index`: The current index.
+- `total`: The length of the array.
+- `isFirst`: True if the current item is the first one.
+- `isLast`: True if the current item is the last one.
+
+#### Example:
+```mustache
+{{#forEach items}}
+    {{index}}: {{item}}{{^isLast}};{{else}}.{{/isLast}}
+{{/forEach}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "items": ["potato", "carrot", "onion"]
+}
+```
+
+### Generated output
+```
+0: potato;
+1: carrot;
+2: onion.
+```
+
+</details>
+
+---
+
+### **or**
+
+`or` returns true if any of the given arguments are truthy.
+
+#### Example:
+```mustache
+{{#or (eq food "apple") (eq food "banana") (eq food "orange")}}
+    {{upper food}} is a fruit.
+{{else}}
+    {{upper food}} is not a fruit.
+{{/or}}
+```
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "food": "banana"
+}
+```
+
+### Generated output
+```
+BANANA is a fruit
+```
+
+</details>
+
+---
