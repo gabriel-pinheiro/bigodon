@@ -38,4 +38,29 @@ describe('helpers', () => { describe('math', () => {
         });
     });
 
+    describe('subtract', () => {
+        it('should subtract numbers', async () => {
+            const templ = compile('{{subtract numA numB}}');
+            expect(await templ({ numA: 2, numB: 3 })).to.equal('-1');
+            expect(await templ({ numA: 2, numB: -1 })).to.equal('3');
+        });
+
+        it('should subtract number strings', async () => {
+            const templ = compile('{{subtract numA numB}}');
+            expect(await templ({ numA: '2', numB: '3' })).to.equal('-1');
+            expect(await templ({ numA: '2', numB: '-1' })).to.equal('3');
+        });
+
+        it('should return NaN for non-numbers', async () => {
+            const templ = compile('{{subtract numA numB}}');
+            expect(await templ({ numA: '2', numB: 'foo' })).to.equal('NaN');
+            expect(await templ({ numA: 'foo', numB: '3' })).to.equal('NaN');
+        });
+
+        it('should work as minus', async () => {
+            const templ = compile('{{minus numA numB}}');
+            expect(await templ({ numA: 1, numB: 1 })).to.equal('0');
+        });
+    });
+
 }); });
