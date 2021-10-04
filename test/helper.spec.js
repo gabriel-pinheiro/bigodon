@@ -59,12 +59,12 @@ describe('runner', () => {
         it('should run async helpers in series', async () => {
             const bigodon = new Bigodon();
             bigodon.addHelper('wait', time => new Promise(resolve => setTimeout(resolve, time)));
-            const templ = bigodon.compile('{{wait 20}}{{wait 30}}');
+            const templ = bigodon.compile('{{wait 200}}{{wait 300}}');
             const start = Date.now();
             await templ(bigodon);
             const deltaT = Date.now() - start;
-            expect(deltaT).to.be.at.least(49);
-            expect(deltaT).to.be.at.most(59);
+            expect(deltaT).to.be.at.least(490);
+            expect(deltaT).to.be.at.most(590);
         });
     });
 });
