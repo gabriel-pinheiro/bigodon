@@ -41,6 +41,24 @@ function random(min: any, max: any): number {
     return Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
 }
 
+function toFixed(num: any, digits: number): string {
+    const fractionDigits = digits < 0 ? 0 : digits;
+
+    return Number(num).toFixed(fractionDigits);
+}
+
+function floor(num: any): number {
+    return Math.floor(num);
+}
+
+function ceil(num: any) : number{
+    return Math.ceil(num);
+}
+
+function round(num: any) : number{
+    return Math.round(num);
+}
+
 export const mathHelpers = Object.assign(Object.create(null), {
     add, sum: add, plus: add,
     subtract, minus: subtract,
@@ -50,5 +68,5 @@ export const mathHelpers = Object.assign(Object.create(null), {
     toInt, toInteger: toInt, parseInt: toInt,
     toFloat, toDecimal: toFloat, parseFloat: toFloat,
     toNumber, number: toNumber,
-    random,
+    random, toFixed, floor, ceil, round
 });
