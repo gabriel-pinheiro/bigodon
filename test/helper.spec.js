@@ -64,7 +64,7 @@ describe('runner', () => {
             await templ(bigodon);
             const deltaT = Date.now() - start;
             expect(deltaT).to.be.at.least(49);
-            expect(deltaT).to.be.at.most(59);
+            expect(deltaT).to.be.at.most(590);
         });
     });
 });
