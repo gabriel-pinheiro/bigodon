@@ -243,4 +243,88 @@ describe('helpers', () => { describe('math', () => {
         });
     });
 
+    describe('toFixed', () => {
+        it('should format a number using fixed-poing notation', async () => {
+            const templ = compile('{{toFixed numA digits}}');
+            expect(await templ({ numA: 5, digits: 2 })).to.equal('5.00');
+            expect(await templ({ numA: 5, digits: 5 })).to.equal('5.00000');
+            expect(await templ({ numA: 5.5, digits: 2 })).to.equal('5.50');
+            expect(await templ({ numA: 3.14159265, digits: 2 })).to.equal('3.14');
+        });
+
+        it('should toFixed number string', async () => {
+            const templ = compile('{{toFixed numA digits}}');
+            expect(await templ({ numA: '5', digits: 2 })).to.equal('5.00');
+            expect(await templ({ numA: '3.14159265', digits: 2 })).to.equal('3.14');
+        });
+
+        it('should toFixed number negative', async () => {
+            const templ = compile('{{toFixed numA digits}}');
+            expect(await templ({ numA: 5, digits: -5 })).to.equal('5');
+            expect(await templ({ numA: 5.5, digits: -5 })).to.equal('6');
+            expect(await templ({ numA: -5, digits: 2 })).to.equal('-5.00');
+        });
+    });
+
+    describe('floor', () => {
+        it('should return the maximum integer less than or equal to a number', async () => {
+            const templ = compile('{{floor numA}}');
+            expect(await templ({ numA: 5.9 })).to.equal('5');
+            expect(await templ({ numA: 5 })).to.equal('5');
+        });
+
+        it('should floor number string', async () => {
+            const templ = compile('{{floor numA}}');
+            expect(await templ({ numA: '5.9' })).to.equal('5');
+            expect(await templ({ numA: '5' })).to.equal('5');
+        });
+
+        it('should floor number negative', async () => {
+            const templ = compile('{{floor numA}}');
+            expect(await templ({ numA: -5.9 })).to.equal('-6');
+            expect(await templ({ numA: -5 })).to.equal('-5');
+        });
+    });
+
+    describe('ceil', () => {
+        it('should return the nearest whole integer greater than or equal to a given number', async () => {
+            const templ = compile('{{ceil numA}}');
+            expect(await templ({ numA: 5.1 })).to.equal('6');
+            expect(await templ({ numA: 5 })).to.equal('5');
+        });
+
+        it('should ceil number string', async () => {
+            const templ = compile('{{ceil numA}}');
+            expect(await templ({ numA: '5.1' })).to.equal('6');
+            expect(await templ({ numA: '5' })).to.equal('5');
+        });
+
+        it('should ceil number negative', async () => {
+            const templ = compile('{{ceil numA}}');
+            expect(await templ({ numA: -5.1 })).to.equal('-5');
+            expect(await templ({ numA: -5 })).to.equal('-5');
+            expect(await templ({ numA: -5.9 })).to.equal('-5');
+        });
+    });
+
+    describe('round', () => {
+        it('should return the value of a number rounded to the nearest integer', async () => {
+            const templ = compile('{{round numA}}');
+            expect(await templ({ numA: 5.1 })).to.equal('5');
+            expect(await templ({ numA: 5.5 })).to.equal('6');
+        });
+
+        it('should round number string', async () => {
+            const templ = compile('{{round numA}}');
+            expect(await templ({ numA: '5.1' })).to.equal('5');
+            expect(await templ({ numA: '5.5' })).to.equal('6');
+        });
+
+        it('should round number negative', async () => {
+            const templ = compile('{{round numA}}');
+            expect(await templ({ numA: -5 })).to.equal('-5');
+            expect(await templ({ numA: -5.5 })).to.equal('-5');
+        });
+    });
+
 }); });
