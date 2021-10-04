@@ -161,8 +161,16 @@ function unique(arr: any): any[] {
     return Array.from(new Set(arr));
 }
 
+function isEmpty(arr: any): boolean {
+    if(!Array.isArray(arr)) {
+        return false;
+    }
+
+    return arr.length === 0;
+}
+
 export const arrayHelpers = Object.assign(Object.create(null), {
     first, last, itemAt, length, after, before, slice, includes,
     contains: includes, isArray, each, forEach, join, merge,
-    reverse, pluck, unique,
+    reverse, pluck, unique, isEmpty
 });
