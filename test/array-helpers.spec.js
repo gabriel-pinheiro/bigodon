@@ -351,4 +351,14 @@ describe('helpers', () => { describe('array', () => {
         });
     });
 
+    describe('isEmpty', () => {
+      it('should return true if and only if its an array and the array is empty', async () => {
+        const templ = compile(`{{isEmpty arr}}`);
+        expect(await templ({ arr: [] })).to.equal('true');
+        expect(await templ({ arr: [1] })).to.equal('false');
+        expect(await templ({ arr: [1, 2, 3] })).to.equal('false');
+        expect(await templ({ arr: 'foo' })).to.equal('false');
+      });
+    })
+
 }); });
