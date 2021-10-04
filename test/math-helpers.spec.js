@@ -149,4 +149,98 @@ describe('helpers', () => { describe('math', () => {
         });
     });
 
+    describe('toInt', () => {
+        it('should convert numbers to integers', async () => {
+            const templ = compile('{{toInt numA}}');
+            expect(await templ({ numA: 2 })).to.equal('2');
+            expect(await templ({ numA: 2.5 })).to.equal('2');
+            expect(await templ({ numA: '2' })).to.equal('2');
+            expect(await templ({ numA: '2.5' })).to.equal('2');
+        });
+
+        it('should return NaN for non-numbers', async () => {
+            const templ = compile('{{toInt numA}}');
+            expect(await templ({ numA: 'foo' })).to.equal('NaN');
+        });
+
+        it('should work as toInteger', async () => {
+            const templ = compile('{{toInteger numA}}');
+            expect(await templ({ numA: 2 })).to.equal('2');
+        });
+
+        it('should work as parseInt', async () => {
+            const templ = compile('{{parseInt numA}}');
+            expect(await templ({ numA: 2 })).to.equal('2');
+        });
+    });
+
+    describe('toFloat', () => {
+        it('should convert numbers to floats', async () => {
+            const templ = compile('{{toFloat numA}}');
+            expect(await templ({ numA: 2 })).to.equal('2');
+            expect(await templ({ numA: 2.5 })).to.equal('2.5');
+            expect(await templ({ numA: '2' })).to.equal('2');
+            expect(await templ({ numA: '2.5' })).to.equal('2.5');
+        });
+
+        it('should return NaN for non-numbers', async () => {
+            const templ = compile('{{toFloat numA}}');
+            expect(await templ({ numA: 'foo' })).to.equal('NaN');
+        });
+
+        it('should work as toDecimal', async () => {
+            const templ = compile('{{toDecimal numA}}');
+            expect(await templ({ numA: 2.5 })).to.equal('2.5');
+        });
+
+        it('should work as parseFloat', async () => {
+            const templ = compile('{{parseFloat numA}}');
+            expect(await templ({ numA: 2.5 })).to.equal('2.5');
+        });
+    });
+
+    describe('toNumber', () => {
+        it('should convert numbers to numbers', async () => {
+            const templ = compile('{{toNumber numA}}');
+            expect(await templ({ numA: 2 })).to.equal('2');
+            expect(await templ({ numA: 2.5 })).to.equal('2.5');
+            expect(await templ({ numA: '2' })).to.equal('2');
+            expect(await templ({ numA: '2.5' })).to.equal('2.5');
+        });
+
+        it('should return NaN for non-numbers', async () => {
+            const templ = compile('{{toNumber numA}}');
+            expect(await templ({ numA: 'foo' })).to.equal('NaN');
+        });
+
+        it('should work as number', async () => {
+            const templ = compile('{{number numA}}');
+            expect(await templ({ numA: 2 })).to.equal('2');
+        });
+    });
+
+    describe('random', () => {
+        it('should return a random number in a range', async () => {
+            const templ = compile('{{random 2 5}}');
+            let min = Infinity;
+            let max = -Infinity;
+
+            for (let i = 0; i < 1e3; i++) {
+                const num = await templ();
+                min = Math.min(num, min);
+                max = Math.max(num, max);
+            }
+
+            expect(min).to.equal(2);
+            expect(max).to.equal(5);
+        });
+
+        it('should return NaN for non-numbers', async () => {
+            const templ = compile('{{random numA numB}}');
+            expect(await templ({ numA: 'foo', numB: '2' })).to.equal('NaN');
+            expect(await templ({ numA: '2', numB: 'bar' })).to.equal('NaN');
+            expect(await templ({ numA: 'foo', numB: 'bar' })).to.equal('NaN');
+        });
+    });
+
 }); });
