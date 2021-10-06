@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - actions
 
 jobs:
   tests:
@@ -24,7 +25,8 @@ jobs:
       run: npm test
     - name: Generate coverage report
       run: npm run test:cov
-    - name: Codecov
-      uses: codecov/codecov-action@v2
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        name: coverage
+        path: coverage.html

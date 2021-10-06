@@ -9,7 +9,7 @@
     "build": "tsc",
     "pretest": "npm run build",
     "test": "lab -v -t 100 -I require -a @hapi/code",
-    "test:cov": "lab -I require -r lcov -o coverage.lcov",
+    "test:cov": "lab -I require -r html -o coverage.html",
     "prepublish": "npm run build"
   },
   "repository": {
