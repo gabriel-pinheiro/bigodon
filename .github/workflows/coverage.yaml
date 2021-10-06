@@ -1,0 +1,32 @@
+name: Coverage report
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - actions
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Repository checkout
+    - uses: actions/setup-node@v2
+      name: Node 14 Setup
+      with:
+        node-version: '14'
+    - name: Install dependencies
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Generate coverage report
+      run: npm run test:cov
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage.html

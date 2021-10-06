@@ -1,5 +1,6 @@
 src
 test
-coverage.*
+coverage.html
 *.md
 horusec-config.json
+.github

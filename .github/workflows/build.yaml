@@ -1,4 +1,4 @@
-name: Tests and coverage
+name: Tests
 
 on:
   pull_request:
@@ -10,7 +10,35 @@ on:
       - actions
 
 jobs:
-  tests:
+  test-node-10:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Repository checkout
+    - uses: actions/setup-node@v2
+      name: Node 10 Setup
+      with:
+        node-version: '10'
+    - name: Install dependencies
+      run: npm install
+    - name: Build and test
+      run: npm test
+
+  test-node-12:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Repository checkout
+    - uses: actions/setup-node@v2
+      name: Node 12 Setup
+      with:
+        node-version: '12'
+    - name: Install dependencies
+      run: npm install
+    - name: Build and test
+      run: npm test
+
+  test-node-14:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,10 +51,17 @@ jobs:
       run: npm install
     - name: Build and test
       run: npm test
-    - name: Generate coverage report
-      run: npm run test:cov
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v2
+
+  test-node-16:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Repository checkout
+    - uses: actions/setup-node@v2
+      name: Node 16 Setup
       with:
-        name: coverage
-        path: coverage.html
+        node-version: '16'
+    - name: Install dependencies
+      run: npm install
+    - name: Build and test
+      run: npm test
