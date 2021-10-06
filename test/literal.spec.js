@@ -41,7 +41,14 @@ describe('parser', () => {
             expect($literal.parse('"foo\\\\"')).to.equal(li('foo\\'));
             expect($literal.parse('"foo\\nbar"')).to.equal(li('foo\nbar'));
             expect($literal.parse('"foo\\tbar"')).to.equal(li('foo\tbar'));
-            expect($literal.parse('"foo\\abar"')).to.equal(li('foo\\abar'));
+            expect($literal.parse('"\\foo bar"')).to.equal(li('foo bar'));
+        });
+
+        it('should parse strings with single quotes and grave accents', () => {
+            expect($literal.parse("'foo'")).to.equal(li('foo'));
+            expect($literal.parse("'foo\\\'bar'")).to.equal(li('foo\'bar'));
+            expect($literal.parse("`foo`")).to.equal(li('foo'));
+            expect($literal.parse("`foo\\\`bar`")).to.equal(li('foo\`bar'));
         });
 
         it('should fail for non-literals', () => {
