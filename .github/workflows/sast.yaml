@@ -1,4 +1,4 @@
-name: sast
+name: Security analisys
 
 on:
   pull_request:
