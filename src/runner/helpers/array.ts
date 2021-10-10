@@ -169,8 +169,19 @@ function isEmpty(arr: any): boolean {
     return arr.length === 0;
 }
 
+
+function splice(arr: any[], start: number, deleteCount: number | undefined): any[] {
+    ensure(typeof start === 'number', 'splice expects first argument to be a number')
+    ensure(typeof deleteCount === 'number' || typeof deleteCount === 'undefined', 'splice expects second argument to be a number')
+
+    if (!Array.isArray(arr)) {
+        return [];
+    }
+    return arr.splice(start);
+}
+
 export const arrayHelpers = Object.assign(Object.create(null), {
     first, last, itemAt, length, after, before, slice, includes,
     contains: includes, isArray, each, forEach, join, merge,
-    reverse, pluck, unique, isEmpty
+    reverse, pluck, unique, isEmpty, splice
 });

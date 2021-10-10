@@ -25,6 +25,7 @@ When writing your Bigodon template, you can use helper functions to perform comm
 - [reverse](#reverse): Reverses an array. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts#L130-L140); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js#L295-L314))
 - [pluck](#pluck): Returns an array of the given property from each item in the original one. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts#L142-L154); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js#L316-L336))
 - [unique](#unique): Returns an array of unique items from the original one. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts#L156-L162); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js#L338-L352))
+- [splice](#splice): Returns a splice of an array. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts#L173-L181); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js#L364-L391))
 
 From [string helpers](#String-Helpers):
 - [split](#split): Splits a string into an array of strings on each separator. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L6); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L89-L95))

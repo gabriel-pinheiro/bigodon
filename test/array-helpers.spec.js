@@ -361,4 +361,33 @@ describe('helpers', () => { describe('array', () => {
       });
     })
 
-}); });
+    describe('splice', () => {
+        it('should return items that have been removed given an index', async () => {
+            const templ = compile(`{{#splice arr start deleteCount}}({{$this}}){{/splice}}`);
+            const actual = await templ({ arr: [1, 2, 3], start:1, deleteCount:2});
+            expect(actual).to.equal('(2)(3)');
+        });
+
+        it('should remove element from the specified index', async () => {
+        const templ = compile(`{{#splice arr start deleteCount}}({{$this}}){{/splice}}`);
+        expect(await templ({ arr: [1, 2, 3], start: -1, deleteCount: 1 })).to.equal('(3)');
+        });
+
+        it('should return empty array for out of index', async () => {
+        const templ = compile(`{{#splice arr start}}({{$this}}){{/splice}}`);
+        expect(await templ({ arr: [1, 2, 3], start: 5 })).to.equal('');
+        });
+
+        it('should return empty array for non-arrays', async () => {
+            const templ = compile(`{{#splice "foo" 1}}({{$this}}){{/splice}}`);
+            expect(await templ()).to.equal('');
+        });
+
+        it('should fail for non-numbers', async () => {
+            const templ = compile(`{{#splice arr start deleteCount elementsToBeAdded}}({{$this}}){{/splice}}`);
+            expect(templ({ arr: [], start: 'a' })).to.reject();
+            expect(templ({ arr: [], start: 0, deleteCount: 'a' })).to.reject();
+        });
+    });
+}); 
+});
