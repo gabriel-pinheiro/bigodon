@@ -389,5 +389,28 @@ describe('helpers', () => { describe('array', () => {
             expect(templ({ arr: [], start: 0, deleteCount: 'a' })).to.reject();
         });
     });
+
+    describe('sort', () => {
+        it('should sort array of numbers in ascending order', async () => {
+            const templ = compile(`{{join (sort arr) ", "}}`);
+
+            expect(await templ({ arr: [100, 14, 78, 90, -100] })).to.equal('-100, 14, 78, 90, 100');
+            expect(await templ({ arr: [] })).to.equal('');
+        });
+
+        it('should sort array of strings in ascending order by their first character', async () => {
+            const templ = compile(`{{join (sort arr) ", "}}`);
+
+            expect(await templ({ arr: ["Banana", "Orange", "Apple", "Mango"] })).to.equal('Apple, Banana, Mango, Orange');
+        });
+
+        it('should fail for non arrays', async () => {
+            const templ = compile(`{{#sort item}}({{$this}}){{/sort}}`);
+
+            await expect(templ({ item: true })).to.reject();
+            await expect(templ({ item: null })).to.reject();
+            await expect(templ({ item: 1 })).to.reject();
+        });
+    });
 }); 
 });

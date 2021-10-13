@@ -59,7 +59,7 @@ function before(arr: any, index: number): any {
 
 function slice(arr: any[], start: number, end: number): any[] {
     ensure(typeof start === 'number' || typeof start === 'undefined',
-            'slice expects second argument to be a number');
+        'slice expects second argument to be a number');
     ensure(typeof end === 'number' || typeof end === 'undefined',
         'slice expects third argument to be a number');
 
@@ -180,8 +180,22 @@ function splice(arr: any[], start: number, deleteCount: number | undefined): any
     return arr.splice(start);
 }
 
+function compareNumbers(a, b) {
+    return a - b;
+}
+
+function compareStrings(a: string, b: string) {
+    return a.localeCompare(b);
+}
+
+function sort(arr: any): any[] | string {
+    ensure(Array.isArray(arr), 'sort expects an array of numbers or strings')
+
+    return typeof arr[0] === 'number' ? arr.sort(compareNumbers) : arr.sort(compareStrings)
+}
+
 export const arrayHelpers = Object.assign(Object.create(null), {
     first, last, itemAt, length, after, before, slice, includes,
     contains: includes, isArray, each, forEach, join, merge,
-    reverse, pluck, unique, isEmpty, splice
+    reverse, pluck, unique, isEmpty, splice, sort
 });
