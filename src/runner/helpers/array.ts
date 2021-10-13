@@ -1,7 +1,7 @@
 import { ensure, UNSAFE_KEYS } from '../../utils';
 
 function first(arr: any): any {
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return null;
     }
 
@@ -9,7 +9,7 @@ function first(arr: any): any {
 }
 
 function last(arr: any): any {
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return null;
     }
 
@@ -20,7 +20,7 @@ function itemAt(arr: any, index: number): any {
     const idx = Number(index);
     ensure(!isNaN(idx), 'itemAt expects second argument to be a number');
 
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return null;
     }
 
@@ -28,7 +28,7 @@ function itemAt(arr: any, index: number): any {
 }
 
 function length(arr: any): number {
-    if(!Array.isArray(arr) && typeof arr !== 'string') {
+    if (!Array.isArray(arr) && typeof arr !== 'string') {
         return -1;
     }
 
@@ -39,7 +39,7 @@ function after(arr: any, index: number): any {
     const idx = Number(index);
     ensure(!isNaN(idx), 'after expects second argument to be a number');
 
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return [];
     }
 
@@ -50,7 +50,7 @@ function before(arr: any, index: number): any {
     const idx = Number(index);
     ensure(!isNaN(idx), 'before expects second argument to be a number');
 
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return [];
     }
 
@@ -63,7 +63,7 @@ function slice(arr: any[], start: number, end: number): any[] {
     ensure(typeof end === 'number' || typeof end === 'undefined',
         'slice expects third argument to be a number');
 
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return [];
     }
 
@@ -71,11 +71,11 @@ function slice(arr: any[], start: number, end: number): any[] {
 }
 
 function includes(arr: any, value: any): boolean {
-    if(typeof arr === 'number') {
+    if (typeof arr === 'number') {
         return String(arr).includes(value);
     }
 
-    if(!Array.isArray(arr) && typeof arr !== 'string') {
+    if (!Array.isArray(arr) && typeof arr !== 'string') {
         return false;
     }
 
@@ -87,7 +87,7 @@ function isArray(arr: any): boolean {
 }
 
 function each(arr: any): any[] {
-    if(Array.isArray(arr)) {
+    if (Array.isArray(arr)) {
         return arr;
     }
 
@@ -110,7 +110,7 @@ function forEach(arr: any): any[] {
 }
 
 function join(arr: any, separator: string): string {
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return '';
     }
 
@@ -119,7 +119,7 @@ function join(arr: any, separator: string): string {
 
 function merge(...arrs: any[]): any[] {
     return arrs.reduce((acc, arr) => {
-        if(Array.isArray(arr)) {
+        if (Array.isArray(arr)) {
             return [...acc, ...arr];
         }
 
@@ -128,11 +128,11 @@ function merge(...arrs: any[]): any[] {
 }
 
 function reverse(arr: any): any[] | string {
-    if(Array.isArray(arr)) {
+    if (Array.isArray(arr)) {
         return arr.reverse();
     }
 
-    if(typeof arr === 'string') {
+    if (typeof arr === 'string') {
         return arr.split('').reverse().join('');
     }
 
@@ -140,11 +140,11 @@ function reverse(arr: any): any[] | string {
 }
 
 function pluck(arr: any, key: string): any[] {
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return [];
     }
 
-    if(UNSAFE_KEYS.has(key)) {
+    if (UNSAFE_KEYS.has(key)) {
         return [];
     }
 
@@ -154,7 +154,7 @@ function pluck(arr: any, key: string): any[] {
 }
 
 function unique(arr: any): any[] {
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return [];
     }
 
@@ -162,7 +162,7 @@ function unique(arr: any): any[] {
 }
 
 function isEmpty(arr: any): boolean {
-    if(!Array.isArray(arr)) {
+    if (!Array.isArray(arr)) {
         return false;
     }
 
@@ -180,18 +180,24 @@ function splice(arr: any[], start: number, deleteCount: number | undefined): any
     return arr.splice(start);
 }
 
-function compareNumbers(a, b) {
+function compareNumbersAscending(a: number, b: number) {
     return a - b;
+}
+function compareNumbersDescending(a: number, b: number) {
+    return b - a;
 }
 
 function compareStrings(a: string, b: string) {
     return a.localeCompare(b);
 }
 
-function sort(arr: any): any[] | string {
+function sort(arr: any, desc: boolean): any[] | string {
     ensure(Array.isArray(arr), 'sort expects an array of numbers or strings')
 
-    return typeof arr[0] === 'number' ? arr.sort(compareNumbers) : arr.sort(compareStrings)
+    if (desc) {
+        return typeof arr[0] === 'number' ? arr.sort(compareNumbersDescending) : arr.sort(compareStrings).reverse();
+    }
+    return typeof arr[0] === 'number' ? arr.sort(compareNumbersAscending) : arr.sort(compareStrings)
 }
 
 export const arrayHelpers = Object.assign(Object.create(null), {

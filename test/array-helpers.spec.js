@@ -411,6 +411,20 @@ describe('helpers', () => { describe('array', () => {
             await expect(templ({ item: null })).to.reject();
             await expect(templ({ item: 1 })).to.reject();
         });
+
+        it('should sort array of numbers in descending order if flag passed', async () => {
+            const templ = compile(`{{join (sort arr desc) ", "}}`);
+
+            expect(await templ({ arr: [100, 14, 78, 90, -100] , desc:true })).to.equal('100, 90, 78, 14, -100');
+            expect(await templ({ arr: [] })).to.equal('');
+        });
+
+        it('should sort array of strings in ascending order by their first character', async () => {
+            const templ = compile(`{{join (sort arr desc) ", "}}`);
+
+            expect(await templ({ arr: ["Banana", "Orange", "Apple", "Mango"], desc:true })).to.equal('Orange, Mango, Banana, Apple');
+        });
+
     });
 }); 
 });
