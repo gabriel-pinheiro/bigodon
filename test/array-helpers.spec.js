@@ -412,6 +412,14 @@ describe('helpers', () => { describe('array', () => {
             await expect(templ({ item: 1 })).to.reject();
         });
 
+        it('should fail for mixed arrays', async () => {
+            const templ = compile(`{{#sort arr}}({{$this}}){{/sort}}`);
+
+            const result = templ({ arr: ["Banana", 1, "Apple", 12, 89, true] });
+            
+            await expect(result).to.reject();
+        });
+
         it('should sort array of numbers in descending order if flag passed', async () => {
             const templ = compile(`{{join (sort arr desc) ", "}}`);
 

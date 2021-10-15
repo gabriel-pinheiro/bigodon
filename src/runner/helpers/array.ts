@@ -191,8 +191,17 @@ function compareStrings(a: string, b: string) {
     return a.localeCompare(b);
 }
 
+function allElementsAreNumeric(arr: any): boolean{
+   return arr.every((value: unknown)=> typeof value === 'number')
+}
+
+function allElementsAreString(arr: any): boolean {
+    return arr.every((value: unknown)=> typeof value === 'string')
+}
+
 function sort(arr: any, desc: boolean): any[] | string {
     ensure(Array.isArray(arr), 'sort expects an array of numbers or strings')
+    ensure(allElementsAreNumeric(arr) || allElementsAreString(arr), 'sort expects all elements to be either string or numeric')
 
     if (desc) {
         return typeof arr[0] === 'number' ? arr.sort(compareNumbersDescending) : arr.sort(compareStrings).reverse();
@@ -205,3 +214,5 @@ export const arrayHelpers = Object.assign(Object.create(null), {
     contains: includes, isArray, each, forEach, join, merge,
     reverse, pluck, unique, isEmpty, splice, sort
 });
+
+
