@@ -419,7 +419,7 @@ describe('helpers', () => { describe('array', () => {
             expect(await templ({ arr: [] })).to.equal('');
         });
 
-        it('should sort array of strings in ascending order by their first character', async () => {
+        it('should sort array of strings in descending order by their first character if flag is passed', async () => {
             const templ = compile(`{{join (sort arr desc) ", "}}`);
 
             expect(await templ({ arr: ["Banana", "Orange", "Apple", "Mango"], desc:true })).to.equal('Orange, Mango, Banana, Apple');
