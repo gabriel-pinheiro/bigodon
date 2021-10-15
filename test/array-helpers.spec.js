@@ -398,10 +398,10 @@ describe('helpers', () => { describe('array', () => {
             expect(await templ({ arr: [] })).to.equal('');
         });
 
-        it('should sort array of strings in ascending order by their first character', async () => {
+        it('should sort array of strings in ascending order by their first character and ignores case', async () => {
             const templ = compile(`{{join (sort arr) ", "}}`);
 
-            expect(await templ({ arr: ["Banana", "Orange", "Apple", "Mango"] })).to.equal('Apple, Banana, Mango, Orange');
+            expect(await templ({ arr: ["banana", "Orange", "apple", "Mango", "custard"] })).to.equal('apple, banana, custard, Mango, Orange');
         });
 
         it('should fail for non arrays', async () => {
