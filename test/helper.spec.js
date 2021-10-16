@@ -2,7 +2,6 @@ const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
 const { compile, default: Bigodon } = require('..');
-const { VERSION } = require('../dist/parser/index');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -19,6 +18,20 @@ describe('runner', () => {
             const templ = compile('Hello, {{upper (append name " schmidt") }}!');
             const result = await templ({ name: 'George' });
             expect(result).to.equal('Hello, GEORGE SCHMIDT!');
+        });
+
+        it('should execute parameterless helpers', async () => {
+            const templ = compile('{{if}}');
+            const result = await templ({ 'if': 'wrong' });
+            expect(result).to.equal('false');
+        });
+
+        it('should execute parameterless extra helpers', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('foo', () => 'bar');
+            const templ = bigodon.compile('{{foo}}');
+            const result = await templ({ foo: 'wrong' });
+            expect(result).to.equal('bar');
         });
 
         it('should not execute non existing helpers', async () => {

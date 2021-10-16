@@ -3,6 +3,7 @@ import { deepCloneNullPrototype } from "../utils";
 import { runBlock } from "./block";
 import { Execution } from "./execution";
 import { runHelperExpression } from "./helper";
+import { helpers } from "./helpers";
 import { runPathExpression } from "./path-expression";
 
 export type LiteralValue = string | number | boolean | null | undefined | object;
@@ -55,15 +56,21 @@ export async function runStatement(execution: Execution, statement: Statement): 
         case 'BLOCK':
             return await runBlock(execution, statement);
         default:
-            // TODO track warn unsupported statement type
             return null;
     }
 }
 
 async function runExpression(execution: Execution, expression: ExpressionStatement): Promise<LiteralValue> {
-    if(expression.params.length === 0) {
-        return runPathExpression(execution, expression);
+    // If there are parameters, the expression is a helper call
+    if(expression.params.length > 0) {
+        return await runHelperExpression(execution, expression);
     }
 
-    return await runHelperExpression(execution, expression);
+    // If there are no parameters but a helper exists with that name, the expression is a helper call
+    if(execution.extraHelpers.has(expression.path) || helpers[expression.path]) {
+        return await runHelperExpression(execution, expression);
+    }
+
+    // Otherwise, it's a path expression
+    return runPathExpression(execution, expression);
 }
