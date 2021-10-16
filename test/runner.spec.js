@@ -58,6 +58,13 @@ describe('runner', () => {
             expect(await templ({ name: false })).to.equal('Hello,  !');
         });
 
+        it('should allow $this for helper-path disambiguisation', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('foo', () => 'wrong');
+            const templ = bigodon.compile('{{ $this.foo }} {{ $this.obj.deep }}');
+            expect(await templ({ foo: 'bar', obj: { deep: 'baz' } })).to.equal('bar baz');
+        });
+
         it('should return context values converted to string', async () => {
             const templ = compile('{{ obj }} {{ arr }} {{ str }} {{ num }} {{ bTrue }} {{ bFalse }} {{ nil }} {{ undef }}');
             expect(await templ({

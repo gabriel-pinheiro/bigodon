@@ -162,6 +162,18 @@ Hello, stranger!
 
 ---
 
+You can use `$this` to disambiguate between context path expressions and parameterless helper calls:
+
+```hbs
+{{! This runs the helper uuid and renders its response }}
+{{ uuid }}
+
+{{! This renders the `uuid` value from context }}
+{{ $this.uuid }}
+```
+
+---
+
 ## Conditional Blocks
 
 You can use blocks for conditionals. Blocks are written between `{{#` and `}}` and closed with `{{/` and `}}`, when given a truthy value they are executed, when given a falsy value they are ignored:

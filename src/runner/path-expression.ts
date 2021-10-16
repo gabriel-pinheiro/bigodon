@@ -10,6 +10,8 @@ export function runPathExpression(execution: Execution, expression: ExpressionSt
 
     if(expression.path === '$this') {
         return execution.context;
+    } else if(path[0] === '$this') {
+        path.shift();
     } else if(path[0] === '$root') {
         ctx = execution.contexts[0];
         path.shift();
@@ -20,7 +22,6 @@ export function runPathExpression(execution: Execution, expression: ExpressionSt
 
     for(const key of path) {
         if(ctx === null || typeof ctx !== 'object' || Array.isArray(ctx) || UNSAFE_KEYS.has(key)) {
-            // TODO track warn
             return void 0;
         }
 
