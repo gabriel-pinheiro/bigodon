@@ -389,5 +389,50 @@ describe('helpers', () => { describe('array', () => {
             expect(templ({ arr: [], start: 0, deleteCount: 'a' })).to.reject();
         });
     });
+
+    describe('sort', () => {
+        it('should sort array of numbers in ascending order', async () => {
+            const templ = compile(`{{join (sort arr) ", "}}`);
+
+            expect(await templ({ arr: [100, 14, 78, 90, -100] })).to.equal('-100, 14, 78, 90, 100');
+            expect(await templ({ arr: [] })).to.equal('');
+        });
+
+        it('should sort array of strings in ascending order by their first character and ignores case', async () => {
+            const templ = compile(`{{join (sort arr) ", "}}`);
+
+            expect(await templ({ arr: ["banana", "Orange", "apple", "Mango", "custard"] })).to.equal('apple, banana, custard, Mango, Orange');
+        });
+
+        it('should fail for non arrays', async () => {
+            const templ = compile(`{{#sort item}}({{$this}}){{/sort}}`);
+
+            await expect(templ({ item: true })).to.reject();
+            await expect(templ({ item: null })).to.reject();
+            await expect(templ({ item: 1 })).to.reject();
+        });
+
+        it('should fail for mixed arrays', async () => {
+            const templ = compile(`{{#sort arr}}({{$this}}){{/sort}}`);
+
+            const result = templ({ arr: ["Banana", 1, "Apple", 12, 89, true] });
+            
+            await expect(result).to.reject();
+        });
+
+        it('should sort array of numbers in descending order if flag passed', async () => {
+            const templ = compile(`{{join (sort arr desc) ", "}}`);
+
+            expect(await templ({ arr: [100, 14, 78, 90, -100] , desc:true })).to.equal('100, 90, 78, 14, -100');
+            expect(await templ({ arr: [] })).to.equal('');
+        });
+
+        it('should sort array of strings in descending order by their first character if flag is passed', async () => {
+            const templ = compile(`{{join (sort arr desc) ", "}}`);
+
+            expect(await templ({ arr: ["Banana", "Orange", "Apple", "Mango"], desc:true })).to.equal('Orange, Mango, Banana, Apple');
+        });
+
+    });
 }); 
 });
