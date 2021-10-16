@@ -81,7 +81,7 @@ describe('runner', () => {
         });
 
         it('should not return Object prototype keys', async () => {
-            const templ = compile('{{ hasOwnProperty }}{{ toString }}{{ obj.toString }}{{ obj.hasOwnProperty }}');
+            const templ = compile('{{ hasOwnProperty }}{{ obj.toString }}{{ obj.hasOwnProperty }}');
             expect(await templ({ obj: {} })).to.equal('');
         });
 
