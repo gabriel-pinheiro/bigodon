@@ -89,6 +89,7 @@ From [string helpers](#String-Helpers):
 - [padEnd](#padEnd): Alias of [padRight](#padRight).
 - [padLeft](#padLeft): Pads the string with the given value to the left until it reaches the given length. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L28-L34); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L303-L327))
 - [padStart](#padStart): Alias of [padLeft](#padLeft).
+- [uuid](#uuid): Generates a random UUID v4.
 
 From [array helpers](#Array-Helpers):
 - [length](#length): Returns the length of a string. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts#L30-L36); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js#L77-L97))

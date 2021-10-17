@@ -1,4 +1,5 @@
 import { ensure } from "../../utils";
+import { v4 as uuid } from 'uuid';
 
 const append = (...args: any[]) => args.map(a => String(a)).join('');
 const uppercase = (str: any) => String(str).toUpperCase();
@@ -16,15 +17,18 @@ function capitalize(str: string): string {
     const strng = String(str);
     return strng.charAt(0).toUpperCase() + strng.slice(1);
 }
+
 function capitalizeAll(str: string): string {
     const strng = String(str);
     return strng.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
+
 function substring(str: any, start: number, end?: number): string {
     ensure(typeof start === 'number', 'substring expects start to be a number');
     ensure(typeof end === 'number' || typeof end === 'undefined', 'substring expects end to be a number or undefined');
     return String(str).substring(start, end);
 }
+
 function padLeft(str: any, length: number, char: string): string {
     ensure(typeof length === 'number', 'padLeft expects length to be a number');
     ensure(typeof char === 'undefined' || typeof char === 'string', 'padLeft expects char to be a string or undefined');
@@ -32,6 +36,7 @@ function padLeft(str: any, length: number, char: string): string {
 
     return String(str).padStart(length, char);
 }
+
 function padRight(str: any, length: number, char: string): string {
     ensure(typeof length === 'number', 'padRight expects length to be a number');
     ensure(typeof char === 'undefined' || typeof char === 'string', 'padRight expects char to be a string or undefined');
@@ -48,5 +53,5 @@ export const stringHelpers = Object.assign(Object.create(null), {
     capitalizeFirst: capitalize, toString, split, startsWith,
     endsWith, trimLeft, trimRight, trimStart: trimLeft,
     trimEnd: trimRight, replace, substring, padLeft,
-    capitalizeWords: capitalizeAll,
+    capitalizeWords: capitalizeAll, uuid,
 });

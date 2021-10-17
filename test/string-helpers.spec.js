@@ -352,4 +352,17 @@ describe('helpers', () => { describe('string', () => {
         });
     });
 
+    describe('uuid', () => {
+        it('should generate random valid UUIDs v4', async () => {
+            const VALID_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+            const templ = compile('{{uuid}}');
+            const result1 = await templ();
+            const result2 = await templ();
+
+            expect(result1).to.match(VALID_UUID);
+            expect(result2).to.match(VALID_UUID);
+            expect(result1).to.not.equal(result2);
+        });
+    });
+
 }); });
