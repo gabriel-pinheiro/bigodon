@@ -1,6 +1,7 @@
 import { $template } from './parser';
 import { TemplateStatement } from './parser/statements';
 import { run as _run } from './runner';
+import { BigodonOptions } from './runner/options';
 import { ensure } from './utils';
 
 class Bigodon {
@@ -13,14 +14,14 @@ class Bigodon {
     }
 
     /** Runs an AST returned by the {@link Bigodon#parse} method. */
-    run = async (ast: TemplateStatement, context?: object): Promise<string> => {
-        return await _run(ast, context, this.helpers);
+    run = async (ast: TemplateStatement, context?: object, options?: BigodonOptions): Promise<string> => {
+        return await _run(ast, context, this.helpers, options);
     }
 
     /** Compiles a template and returns a function that, when called, executes it */
-    compile = (template: string): ((context?: object) => Promise<string>) => {
+    compile = (template: string): ((context?: object, options?: BigodonOptions) => Promise<string>) => {
         const ast = this.parse(template);
-        return (context?: object) => this.run(ast, context);
+        return (context?: object, options?: BigodonOptions) => this.run(ast, context, options);
     }
 
     addHelper = (name: string, helper: Function): Bigodon => {
@@ -44,4 +45,5 @@ export const { run } = defaultBigodon;
 export const { compile } = defaultBigodon;
 
 export { TemplateStatement } from './parser/statements';
+export { BigodonOptions } from './runner/options';
 export default Bigodon;

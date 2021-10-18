@@ -4,6 +4,7 @@ import { runBlock } from "./block";
 import { Execution } from "./execution";
 import { runHelperExpression } from "./helper";
 import { helpers } from "./helpers";
+import { BigodonOptions } from "./options";
 import { runPathExpression } from "./path-expression";
 
 export type LiteralValue = string | number | boolean | null | undefined | object;
@@ -13,13 +14,14 @@ const MAX_VERSION = 2;
 
 export async function run(ast: TemplateStatement,
                           context: object = {},
-                          extraHelpers: Map<string, Function>): Promise<string> {
+                          extraHelpers: Map<string, Function>,
+                          options?: BigodonOptions): Promise<string> {
     if(ast.version < MIN_VERSION || ast.version > MAX_VERSION) {
         throw new Error(`Unsupported AST version ${ast.version}, parse it again to generate a new AST`);
     }
 
     const ctx = deepCloneNullPrototype(context);
-    const execution = Execution.of(ctx, extraHelpers);
+    const execution = Execution.of(ctx, extraHelpers, options);
     return await runStatements(execution, ast.statements);
 }
 

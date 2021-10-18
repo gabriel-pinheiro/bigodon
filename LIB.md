@@ -97,3 +97,34 @@ async function main() {
 
 main().catch(console.error);
 ```
+
+## Data from execution
+
+Your helpers can provide data from the templates to your code by using the `this.data` object.
+
+```typescript
+import Bigodon from 'bigodon';
+const bigodon = new Bigodon();
+
+bigodon.addHelper('setTitle', function (title: string): void {
+    if(!this.data) {
+        return;
+    }
+
+    this.data.title = title;
+});
+
+async function main() {
+    const source = '{{setTitle (uppercase text)}}';
+    const template = bigodon.compile(source);
+
+    const data = {};
+    await template({
+        text: "Lorem ipsum",
+    }, { data });
+
+    console.log(data.title); // LOREM IPSUM
+}
+
+main().catch(console.error);
+```

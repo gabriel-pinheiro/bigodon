@@ -17,6 +17,6 @@ export async function runHelperExpression(execution: Execution, expression: Expr
 
     const paramsTasks = expression.params.map(p => runStatement(execution, p));
     const params = await Promise.all(paramsTasks);
-    const result = await fn(...params);
+    const result = await fn.apply(execution, params);
     return result;
 }

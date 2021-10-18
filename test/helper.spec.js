@@ -79,5 +79,18 @@ describe('runner', () => {
             expect(deltaT).to.be.at.least(490);
             expect(deltaT).to.be.at.most(590);
         });
+
+        it('should pass execution to helpers', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('setTitle', function (title) {
+                this.data.title = title;
+            });
+
+            const templ = bigodon.compile('{{setTitle "Hello"}}');
+
+            const data = {};
+            await templ(bigodon, { data });
+            expect(data.title).to.equal('Hello');
+        });
     });
 });
