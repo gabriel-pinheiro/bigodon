@@ -3,4 +3,5 @@ test
 coverage.html
 *.md
 horusec-config.json
+eslint.js
 .github

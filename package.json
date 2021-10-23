@@ -11,8 +11,8 @@
     "test": "lab -v -t 100 -I require -a @hapi/code",
     "test:cov": "lab -I require -r html -o coverage.html",
     "prepublish": "npm run build",
-    "lint": "eslint \"src/**/*.ts\"",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix"
+    "lint": "eslint -c eslint.js \"src/**/*.ts\"",
+    "lint:fix": "eslint -c eslint.js \"src/**/*.ts\" --fix"
   },
   "repository": {
     "type": "git",
