@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Pr from 'pierrejs';
 import { char } from './utils';
 
@@ -10,7 +11,7 @@ enum State {
 
 const escapes = {
     '"': '"',
-    "'": "'",
+    '\'': '\'',
     '`': '`',
     '\\': '\\',
     'n': '\n',
@@ -19,27 +20,27 @@ const escapes = {
 };
 
 const doubleQuote = Pr.string('"').withName('double quotes');
-const singleQuote = Pr.string("'").withName('single quote');
+const singleQuote = Pr.string('\'').withName('single quote');
 const graveAccent = Pr.string('`').withName('grave accent');
 const quote = Pr.oneOf(doubleQuote, singleQuote, graveAccent);
 
-export const lString = Pr.context('string', function *() {
+export const lString = Pr.context('string', function* () {
     const openQuote = yield quote;
     let state: State = State.READ_CHAR;
     let content = '';
 
     /* $lab:coverage:off$ */
-    while(true) {
+    while (true) {
     /* $lab:coverage:on$ */
-        switch(state) {
+        switch (state) {
             case State.READ_CHAR: {
                 const c = yield char;
-                if(c === '\\') {
+                if (c === '\\') {
                     state = State.READ_ESCAPED_CHAR;
                     break;
                 }
 
-                if(c === openQuote) {
+                if (c === openQuote) {
                     return content;
                 }
 

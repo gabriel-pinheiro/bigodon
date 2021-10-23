@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Pr, { Parser } from 'pierrejs';
 import { $literal } from './literal';
 import { ExpressionStatement, LiteralStatement, Statement } from './statements';
@@ -23,16 +24,16 @@ const path: Parser<ExpressionStatement> = Pr.regex('context path', /^[a-zA-Z0-9\
     params: [],
 }));
 
-export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('expression', function*() {
+export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('expression', function* () {
     const stack = [[]];
     let state: State = State._START;
 
     const expressionFromStack = expr => {
-        if(!Array.isArray(expr)) {
+        if (!Array.isArray(expr)) {
             return expr;
         }
         const [stmt, ...params] = expr;
-        if(stmt.type === 'LITERAL') {
+        if (stmt.type === 'LITERAL') {
             return stmt;
         }
         stmt.params = params.map(expressionFromStack);
@@ -40,7 +41,7 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
     };
 
     /* $lab:coverage:off$ */
-    while(true) {
+    while (true) {
     /* $lab:coverage:on$ */
         switch (state) {
             case State._START: {
@@ -67,16 +68,16 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
                 yield optionalSpaces;
 
                 const end = yield Pr.optional(peekEnd);
-                if(end) {
-                    if(stack.length > 1) {
+                if (end) {
+                    if (stack.length > 1) {
                         yield Pr.fail('Expected ")", make sure every parenthesis was closed');
                     }
                     return expressionFromStack(stack[0]);
                 }
 
                 const subExprEnd = yield Pr.optional(Pr.string(')'));
-                if(subExprEnd) {
-                    if(stack.length <= 1) {
+                if (subExprEnd) {
+                    if (stack.length <= 1) {
                         yield Pr.fail('Unexpected ")", this parenthesis wasn\'t opened');
                     }
 
@@ -93,30 +94,30 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
                 yield optionalSpaces;
 
                 const end = yield Pr.optional(peekEnd);
-                if(end) {
-                    if(stack.length > 1) {
+                if (end) {
+                    if (stack.length > 1) {
                         yield Pr.fail('Expected ")", make sure every parenthesis was closed');
                     }
                     return expressionFromStack(stack[0]);
                 }
 
                 const param = yield Pr.optional(Pr.either<Statement>($literal, path));
-                if(param) {
+                if (param) {
                     topOfStack(stack).push(param);
                     state = State.GOT_PATH;
                     break;
                 }
 
                 const subExpr = yield Pr.optional(Pr.string('('));
-                if(subExpr) {
+                if (subExpr) {
                     stack.push([]);
                     state = State._START;
                     break;
                 }
 
                 const subExprEnd = yield Pr.optional(Pr.string(')'));
-                if(subExprEnd) {
-                    if(stack.length <= 1) {
+                if (subExprEnd) {
+                    if (stack.length <= 1) {
                         yield Pr.fail('Unexpected ")", this parenthesis wasn\'t opened');
                     }
 

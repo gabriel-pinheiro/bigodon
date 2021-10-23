@@ -1,17 +1,17 @@
-import { LiteralValue, runStatement } from "./index";
-import { ExpressionStatement } from "../parser/statements";
-import { helpers } from "./helpers";
-import { UNSAFE_KEYS } from "../utils";
-import { Execution } from "./execution";
+import { LiteralValue, runStatement } from './index';
+import { ExpressionStatement } from '../parser/statements';
+import { helpers } from './helpers';
+import { UNSAFE_KEYS } from '../utils';
+import { Execution } from './execution';
 
 export async function runHelperExpression(execution: Execution, expression: ExpressionStatement): Promise<LiteralValue> {
     const helperName = expression.path;
-    if(UNSAFE_KEYS.has(helperName)) {
+    if (UNSAFE_KEYS.has(helperName)) {
         throw new Error(`Helper ${helperName} not allowed`);
     }
 
     const fn = execution.extraHelpers.get(helperName) || helpers[helperName];
-    if(!fn) {
+    if (!fn) {
         throw new Error(`Helper ${helperName} not found`);
     }
 

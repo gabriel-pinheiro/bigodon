@@ -6,17 +6,17 @@ export const UNSAFE_KEYS = new Set([
 ]);
 
 export function deepCloneNullPrototype(obj: object): object {
-    if(Array.isArray(obj)) {
+    if (Array.isArray(obj)) {
         return obj.map(deepCloneNullPrototype);
     }
 
-    if(obj === null || typeof obj !== 'object') {
+    if (obj === null || typeof obj !== 'object') {
         return obj;
     }
 
     const clone = Object.create(null);
-    for(const key in obj) {
-        if(UNSAFE_KEYS.has(key)) {
+    for (const key in obj) {
+        if (UNSAFE_KEYS.has(key)) {
             continue;
         }
         clone[key] = deepCloneNullPrototype(obj[key]);
@@ -26,7 +26,7 @@ export function deepCloneNullPrototype(obj: object): object {
 }
 
 export function ensure(condition: boolean, message: string): void {
-    if(!condition) {
+    if (!condition) {
         throw new Error(message);
     }
 }

@@ -34,7 +34,7 @@ function random(min: any, max: any): number {
     const minNum = Number(min);
     const maxNum = Number(max);
 
-    if(isNaN(minNum) || isNaN(maxNum)) {
+    if (isNaN(minNum) || isNaN(maxNum)) {
         return NaN;
     }
 
@@ -51,11 +51,11 @@ function floor(num: any): number {
     return Math.floor(num);
 }
 
-function ceil(num: any) : number{
+function ceil(num: any) : number {
     return Math.ceil(num);
 }
 
-function round(num: any) : number{
+function round(num: any) : number {
     return Math.round(num);
 }
 
@@ -68,5 +68,5 @@ export const mathHelpers = Object.assign(Object.create(null), {
     toInt, toInteger: toInt, parseInt: toInt,
     toFloat, toDecimal: toFloat, parseFloat: toFloat,
     toNumber, number: toNumber,
-    random, toFixed, floor, ceil, round
+    random, toFixed, floor, ceil, round,
 });

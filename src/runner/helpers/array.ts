@@ -171,8 +171,8 @@ function isEmpty(arr: any): boolean {
 
 
 function splice(arr: any[], start: number, deleteCount: number | undefined): any[] {
-    ensure(typeof start === 'number', 'splice expects first argument to be a number')
-    ensure(typeof deleteCount === 'number' || typeof deleteCount === 'undefined', 'splice expects second argument to be a number')
+    ensure(typeof start === 'number', 'splice expects first argument to be a number');
+    ensure(typeof deleteCount === 'number' || typeof deleteCount === 'undefined', 'splice expects second argument to be a number');
 
     if (!Array.isArray(arr)) {
         return [];
@@ -191,28 +191,28 @@ function compareStrings(a: string, b: string) {
     return a.localeCompare(b);
 }
 
-function allElementsAreNumeric(arr: any): boolean{
-   return arr.every((value: unknown)=> typeof value === 'number')
+function allElementsAreNumeric(arr: any): boolean {
+    return arr.every((value: unknown)=> typeof value === 'number');
 }
 
 function allElementsAreString(arr: any): boolean {
-    return arr.every((value: unknown)=> typeof value === 'string')
+    return arr.every((value: unknown)=> typeof value === 'string');
 }
 
 function sort(arr: any, desc: boolean): any[] | string {
-    ensure(Array.isArray(arr), 'sort expects an array of numbers or strings')
-    ensure(allElementsAreNumeric(arr) || allElementsAreString(arr), 'sort expects all elements to be either string or numeric')
+    ensure(Array.isArray(arr), 'sort expects an array of numbers or strings');
+    ensure(allElementsAreNumeric(arr) || allElementsAreString(arr), 'sort expects all elements to be either string or numeric');
 
     if (desc) {
         return typeof arr[0] === 'number' ? arr.sort(compareNumbersDescending) : arr.sort(compareStrings).reverse();
     }
-    return typeof arr[0] === 'number' ? arr.sort(compareNumbersAscending) : arr.sort(compareStrings)
+    return typeof arr[0] === 'number' ? arr.sort(compareNumbersAscending) : arr.sort(compareStrings);
 }
 
 export const arrayHelpers = Object.assign(Object.create(null), {
     first, last, itemAt, length, after, before, slice, includes,
     contains: includes, isArray, each, forEach, join, merge,
-    reverse, pluck, unique, isEmpty, splice, sort
+    reverse, pluck, unique, isEmpty, splice, sort,
 });
 
 

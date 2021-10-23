@@ -14,7 +14,7 @@ const hDefault = (...values: any[]) => values.find(v => typeof v !== 'undefined'
 
 export const comparisonHelpers = Object.assign(Object.create(null), {
     and, or, not, eq, is, gt, gte,
-    lt, lte, 'if': hIf, unless,
-    'typeof': hTypeof, 'default': hDefault,
+    lt, lte, if: hIf, unless,
+    typeof: hTypeof, default: hDefault,
     coalesce: hDefault, firstNonNull: hDefault,
 });

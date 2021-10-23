@@ -1,18 +1,18 @@
-import { runStatement, runStatements } from ".";
-import { BlockStatement } from "../parser/statements";
-import { Execution } from "./execution";
+import { runStatement, runStatements } from '.';
+import { BlockStatement } from '../parser/statements';
+import { Execution } from './execution';
 
 export async function runBlock(execution: Execution, block: BlockStatement): Promise<string | null> {
     const value = await runStatement(execution, block.expression);
     // Negated blocks
-    if(block.isNegated) {
+    if (block.isNegated) {
         // Value is true and there is an else block
-        if(value && Array.isArray(block.elseStatements)) {
+        if (value && Array.isArray(block.elseStatements)) {
             return await runStatements(execution, block.elseStatements);
         }
 
         // Value is true and there is no else block
-        if(value) {
+        if (value) {
             return null;
         }
 
@@ -21,9 +21,9 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
     }
 
     // Falsy value or empty array
-    if(!value || (Array.isArray(value) && value.length === 0)) {
+    if (!value || (Array.isArray(value) && value.length === 0)) {
         // Value is false and there is an else block
-        if(Array.isArray(block.elseStatements)) {
+        if (Array.isArray(block.elseStatements)) {
             return await runStatements(execution, block.elseStatements);
         }
 
@@ -32,10 +32,10 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
     }
 
     // Non empty array
-    if(Array.isArray(value)) {
+    if (Array.isArray(value)) {
         let result = '';
 
-        for(const item of value) {
+        for (const item of value) {
             result += await runStatements(execution.withChildContext(item), block.statements);
         }
 
@@ -43,7 +43,7 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
     }
 
     // Object
-    if(typeof value === 'object') {
+    if (typeof value === 'object') {
         return await runStatements(execution.withChildContext(value), block.statements);
     }
 

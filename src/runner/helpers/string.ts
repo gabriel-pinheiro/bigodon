@@ -1,4 +1,4 @@
-import { ensure } from "../../utils";
+import { ensure } from '../../utils';
 import { v4 as uuid } from 'uuid';
 
 const append = (...args: any[]) => args.map(a => String(a)).join('');
@@ -20,7 +20,7 @@ function capitalize(str: string): string {
 
 function capitalizeAll(str: string): string {
     const strng = String(str);
-    return strng.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    return strng.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
 function substring(str: any, start: number, end?: number): string {
