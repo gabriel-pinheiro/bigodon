@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import Pr, { Parser } from 'pierrejs';
 import { $literal } from './literal';
-import { ExpressionStatement, LiteralStatement, Statement } from './statements';
+import { ExpressionStatement, LiteralStatement, Location, Statement } from './statements';
 import { optionalSpaces } from './utils';
 
 export type ExpressionOrLiteralStatement = ExpressionStatement | LiteralStatement;
@@ -18,8 +18,9 @@ enum State {
 const topOfStack = <T>(stack: T[]): T => stack[stack.length - 1];
 
 const peekEnd = Pr.lookAhead(Pr.string('}}'));
-const path: Parser<ExpressionStatement> = Pr.regex('context path', /^[a-zA-Z0-9\-_$\.]+/).map(path => ({
+const path: Parser<ExpressionStatement> = Pr.regex('context path', /^[a-zA-Z0-9\-_$\.]+/).map((path, loc) => ({
     type: 'EXPRESSION',
+    loc,
     path,
     params: [],
 }));
@@ -115,13 +116,14 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
                     break;
                 }
 
-                const subExprEnd = yield Pr.optional(Pr.string(')'));
+                const subExprEnd: Location = yield Pr.optional(Pr.string(')')).map((v, loc) => v ? loc : null);
                 if (subExprEnd) {
                     if (stack.length <= 1) {
                         yield Pr.fail('Unexpected ")", this parenthesis wasn\'t opened');
                     }
 
                     const expr = stack.pop();
+                    expr[0].loc.end = subExprEnd.start;
                     topOfStack(stack).push(expr);
                     state = State.GOT_PATH;
                     break;
@@ -136,4 +138,4 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
             /* $lab:coverage:on$ */
         }
     }
-});
+}).map(({ type, loc: _, ...v }, loc) => ({ type, loc, ...v }));

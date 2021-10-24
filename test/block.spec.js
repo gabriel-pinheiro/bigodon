@@ -13,13 +13,16 @@ describe('parser', () => {
             const result = parse('{{#foo}}{{/foo}}');
             expect(result).to.equal({
                 "type": "TEMPLATE",
+                "loc": { start: 0, end: 16 },
                 "version": VERSION,
                 "statements": [
                   {
                     "type": "BLOCK",
+                    "loc": { start: 0, end: 16 },
                     "isNegated": false,
                     "expression": {
                       "type": "EXPRESSION",
+                      "loc": { start: 3, end: 6 },
                       "path": "foo",
                       "params": []
                     },
@@ -33,31 +36,38 @@ describe('parser', () => {
             const result = parse('{{#foo}}a{{bar}}b{{/foo}}');
             expect(result).to.equal({
                 "type": "TEMPLATE",
+                "loc": { start: 0, end: 25 },
                 "version": VERSION,
                 "statements": [
                   {
                     "type": "BLOCK",
+                    "loc": { start: 0, end: 25 },
                     "isNegated": false,
                     "expression": {
                       "type": "EXPRESSION",
+                      "loc": { start: 3, end: 6 },
                       "path": "foo",
                       "params": []
                     },
                     "statements": [
                       {
                         "type": "TEXT",
+                        "loc": { start: 8, end: 9 },
                         "value": "a"
                       },
                       {
                         "type": "MUSTACHE",
+                        "loc": { start: 9, end: 16 },
                         "expression": {
                           "type": "EXPRESSION",
+                          "loc": { start: 11, end: 14 },
                           "path": "bar",
                           "params": []
                         }
                       },
                       {
                         "type": "TEXT",
+                        "loc": { start: 16, end: 17 },
                         "value": "b"
                       }
                     ]
@@ -70,17 +80,21 @@ describe('parser', () => {
             const result = parse('{{#foo bar}}{{/foo}}');
             expect(result).to.equal({
                 "type": "TEMPLATE",
+                "loc": { start: 0, end: 20 },
                 "version": VERSION,
                 "statements": [
                   {
                     "type": "BLOCK",
+                    "loc": { start: 0, end: 20 },
                     "isNegated": false,
                     "expression": {
                       "type": "EXPRESSION",
+                      "loc": { start: 3, end: 10 },
                       "path": "foo",
                       "params": [
                         {
                           "type": "EXPRESSION",
+                          "loc": { start: 7, end: 10 },
                           "path": "bar",
                           "params": []
                         }
@@ -96,28 +110,34 @@ describe('parser', () => {
             const result = parse('{{#foo}}{{#bar}}oy{{/bar}}{{/foo}}');
             expect(result).to.equal({
                 "type": "TEMPLATE",
+                "loc": { start: 0, end: 34 },
                 "version": VERSION,
                 "statements": [
                   {
                     "type": "BLOCK",
+                    "loc": { start: 0, end: 34 },
                     "isNegated": false,
                     "expression": {
                       "type": "EXPRESSION",
+                      "loc": { start: 3, end: 6 },
                       "path": "foo",
                       "params": []
                     },
                     "statements": [
                       {
                         "type": "BLOCK",
+                        "loc": { start: 8, end: 26 },
                         "isNegated": false,
                         "expression": {
                           "type": "EXPRESSION",
+                          "loc": { start: 11, end: 14 },
                           "path": "bar",
                           "params": []
                         },
                         "statements": [
                           {
                             "type": "TEXT",
+                            "loc": { start: 16, end: 18 },
                             "value": "oy"
                           }
                         ]
@@ -132,13 +152,16 @@ describe('parser', () => {
             const result = parse('{{^foo}}{{/foo}}');
             expect(result).to.equal({
                 "type": "TEMPLATE",
+                "loc": { start: 0, end: 16 },
                 "version": VERSION,
                 "statements": [
                   {
                     "type": "BLOCK",
+                    "loc": { start: 0, end: 16 },
                     "isNegated": true,
                     "expression": {
                       "type": "EXPRESSION",
+                      "loc": { start: 3, end: 6 },
                       "path": "foo",
                       "params": []
                     },
@@ -152,22 +175,27 @@ describe('parser', () => {
           const result = parse('{{#foo}}first{{else}}second{{/foo}}');
           expect(result).to.equal({
               "type": "TEMPLATE",
+              "loc": { start: 0, end: 35 },
               "version": VERSION,
               "statements": [
                 {
                   "type": "BLOCK",
+                  "loc": { start: 0, end: 35 },
                   "isNegated": false,
                   "expression": {
                     "type": "EXPRESSION",
+                    "loc": { start: 3, end: 6 },
                     "path": "foo",
                     "params": []
                   },
                   "statements": [{
                     "type": "TEXT",
+                    "loc": { start: 8, end: 13 },
                     "value": "first"
                   }],
                   "elseStatements": [{
                     "type": "TEXT",
+                    "loc": { start: 21, end: 27 },
                     "value": "second"
                   }]
                 }
@@ -179,22 +207,27 @@ describe('parser', () => {
           const result = parse('{{^foo}}first{{else}}second{{/foo}}');
           expect(result).to.equal({
               "type": "TEMPLATE",
+              "loc": { start: 0, end: 35 },
               "version": VERSION,
               "statements": [
                 {
                   "type": "BLOCK",
+                  "loc": { start: 0, end: 35 },
                   "isNegated": true,
                   "expression": {
                     "type": "EXPRESSION",
+                    "loc": { start: 3, end: 6 },
                     "path": "foo",
                     "params": []
                   },
                   "statements": [{
                     "type": "TEXT",
+                    "loc": { start: 8, end: 13 },
                     "value": "first"
                   }],
                   "elseStatements": [{
                     "type": "TEXT",
+                    "loc": { start: 21, end: 27 },
                     "value": "second"
                   }]
                 }

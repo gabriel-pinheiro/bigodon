@@ -37,12 +37,12 @@ describe('runner', () => {
         it('should not execute non existing helpers', async () => {
             const templ = compile('Hello, {{non-existing name }}!');
             const result = templ({ name: 'George' });
-            expect(result).to.reject(/helper non-existing not found/i);
+            await expect(result).to.reject(/helper non-existing not found/i);
         });
 
         it('should not allow unsafe keys as helper names', async () => {
             const templ = compile('Hello, {{__proto__ "Schmidt" }}!');
-            expect(templ()).to.reject(/helper __proto__ not allowed/i);
+            await expect(templ()).to.reject(/helper __proto__ not allowed/i);
         });
 
         it('should run extra helpers', async () => {
@@ -91,6 +91,34 @@ describe('runner', () => {
             const data = {};
             await templ(bigodon, { data });
             expect(data.title).to.equal('Hello');
+        });
+
+        it('should log helper and location on error', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('fail', () => { throw new Error('fail'); });
+
+            const templ = bigodon.compile('{{fail}}');
+            await expect(templ(bigodon)).to.reject('Error at helper fail, position 2: fail');
+        });
+
+        it('should log helper when no location on error', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('fail', () => { throw new Error('fail'); });
+
+            const ast = {
+                type: 'TEMPLATE',
+                version: 2,
+                statements: [{
+                    type: 'MUSTACHE',
+                    expression: {
+                        type: 'EXPRESSION',
+                        path: 'fail',
+                        params: [],
+                    },
+                }],
+            };
+
+            await expect(bigodon.run(ast, bigodon)).to.reject('Error at helper fail: fail');
         });
     });
 });

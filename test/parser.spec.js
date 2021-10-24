@@ -11,18 +11,22 @@ describe('parser', () => {
     it('should parse empty', () => {
         expect(parse('')).to.equal({
             type: 'TEMPLATE',
+            loc: { start: 0, end: 0 },
             version: VERSION,
             statements: [],
         });
     });
+
     it('should parse text', () => {
         const text = 'Hello World!';
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
             version: VERSION,
             statements: [{
                 type: 'TEXT',
+                loc: { start: 0, end: text.length },
                 value: 'Hello World!',
             }],
         });
@@ -33,14 +37,18 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
             version: VERSION,
             statements: [{
                 type: 'MUSTACHE',
+                loc: { start: 0, end: text.length },
                 expression: {
                     type: 'EXPRESSION',
+                    loc: { start: 2, end: 13 },
                     path: 'foo',
                     params: [{
                         type: 'LITERAL',
+                        loc: { start: 7, end: 12 },
                         value: 'bar',
                     }],
                 },
@@ -53,15 +61,19 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
             version: VERSION,
             statements: [{
                 type: 'TEXT',
+                loc: { start: 0, end: 3 },
                 value: 'foo',
             }, {
                 type: 'COMMENT',
+                loc: { start: 3, end: 27 },
                 value: ' this is a comment ',
             }, {
                 type: 'TEXT',
+                loc: { start: 27, end: text.length },
                 value: 'bar',
             }],
         });
@@ -75,31 +87,39 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             "type": "TEMPLATE",
+            "loc": { "start": 0, "end": text.length },
             "version": VERSION,
             "statements": [{
                     "type": "COMMENT",
+                    "loc": { "start": 0, "end": 20 },
                     "value": " Greeting user "
                 },
                 {
                     "type": "TEXT",
+                    "loc": { "start": 20, "end": 27 },
                     "value": "\nHello "
                 },
                 {
                     "type": "MUSTACHE",
+                    "loc": { "start": 27, "end": text.length - 1 },
                     "expression": {
                         "type": "EXPRESSION",
+                        "loc": { "start": 29, "end": text.length - 3 },
                         "path": "atIndex",
                         "params": [{
                                 "type": "EXPRESSION",
+                                "loc": { "start": 38, "end": 48 },
                                 "path": "split",
                                 "params": [{
                                     "type": "EXPRESSION",
+                                    "loc": { "start": 44, "end": 48 },
                                     "path": "name",
                                     "params": []
                                 }]
                             },
                             {
                                 "type": "LITERAL",
+                                "loc": { "start": 50, "end": 51 },
                                 "value": 0
                             }
                         ]
@@ -107,6 +127,7 @@ describe('parser', () => {
                 },
                 {
                     "type": "TEXT",
+                    "loc": { "start": text.length - 1, "end": text.length },
                     "value": "!"
                 }
             ]
@@ -118,9 +139,11 @@ describe('parser', () => {
         const result = parse(text);
         expect(result).to.equal({
             type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
             version: VERSION,
             statements: [{
                 type: 'TEXT',
+                loc: { start: 0, end: text.length },
                 value: 'hello {{ world',
             }],
         });

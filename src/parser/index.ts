@@ -2,7 +2,7 @@ import Pr, { Parser } from 'pierrejs';
 import { $expression } from './expression';
 import {
     BlockStatement, CommentStatement, ExpressionStatement,
-    LiteralStatement, MustacheStatement, Statement,
+    LiteralStatement, Location, MustacheStatement, Statement,
     TemplateStatement, TextStatement,
 } from './statements';
 import {
@@ -11,7 +11,7 @@ import {
 } from './utils';
 
 const topOfStack = <T>(stack: T[]): T => stack[stack.length - 1];
-const topOfStackStmts = (stack: (TemplateStatement | BlockStatement)[]): Statement[] => {
+const topOfStackStmts = (stack: (Omit<TemplateStatement, 'loc'> | BlockStatement)[]): Statement[] => {
     const top = stack[stack.length - 1];
     if ('elseStatements' in top) {
         return top.elseStatements;
@@ -19,9 +19,11 @@ const topOfStackStmts = (stack: (TemplateStatement | BlockStatement)[]): Stateme
     return top.statements;
 };
 
-const buildBlock = (expression: ExpressionStatement,
+const buildBlock = (loc: Location,
+                    expression: ExpressionStatement,
                     isNegated: boolean): BlockStatement => ({
     type: 'BLOCK',
+    loc,
     isNegated,
     expression,
     statements: [],
@@ -30,21 +32,22 @@ const buildBlock = (expression: ExpressionStatement,
 export const VERSION = 2;
 
 export const $text: Parser<Statement> = text
-    .map((value): TextStatement => ({ type: 'TEXT', value }))
+    .map((value, loc): TextStatement => ({ type: 'TEXT', loc, value }))
     .withName('text');
 
 export const $comment: Parser<Statement> = Pr.all(char, text)
     .map(atPos(1))
-    .map((value): CommentStatement => ({ type: 'COMMENT', value }))
+    .map((value, { start, end }): CommentStatement => ({ type: 'COMMENT', loc: { start: start - 2, end: end + 2 }, value }))
     .withName('comment');
 
-const $mustache: Parser<Statement> = $expression.map(expression => ({
+const $mustache: Parser<Statement> = $expression.map((expression, { start, end }) => ({
     type: 'MUSTACHE',
+    loc: { start: start - 2, end: end + 2 },
     expression,
 }));
 
 export const $template = Pr.context('mustache', function* () {
-    const stack: [TemplateStatement, ...BlockStatement[]] = [{
+    const stack: [Omit<TemplateStatement, 'loc'>, ...BlockStatement[]] = [{
         type: 'TEMPLATE',
         version: VERSION,
         statements: [],
@@ -59,7 +62,7 @@ export const $template = Pr.context('mustache', function* () {
             // no need to `continue`, two texts in a row aren't possible
         }
 
-        const open = yield Pr.optional(openMustache);
+        const open = yield Pr.optional(openMustache).map((v, loc) => v ? loc : null);
         if (open) {
             switch (yield peek) {
                 case '!': {
@@ -79,7 +82,7 @@ export const $template = Pr.context('mustache', function* () {
                         /* $lab:coverage:on$ */
                     }
 
-                    stack.push(buildBlock(expression, typeChar === '^'));
+                    stack.push(buildBlock(open, expression, typeChar === '^'));
                     break;
                 }
 
@@ -103,9 +106,10 @@ export const $template = Pr.context('mustache', function* () {
 
                     const block = stack.pop() as BlockStatement;
                     if (block.expression.path !== name) {
-                        yield Pr.fail(`Unexpected {{/${name}}}, this block was opened as {{${block.expression.path}}}`);
+                        yield Pr.fail(`Unexpected {{/${name}}}, this block was opened as {{#${block.expression.path}}}`);
                     }
 
+                    block.loc.end = expression.loc.end + 2;
                     topOfStackStmts(stack).push(block);
                     break;
                 }
@@ -157,4 +161,4 @@ export const $template = Pr.context('mustache', function* () {
     }
 
     return stack[0];
-});
+}).map(({ type, ...v }, loc) => ({ type, loc, ...v }));
