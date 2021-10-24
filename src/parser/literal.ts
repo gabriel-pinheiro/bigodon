@@ -19,5 +19,5 @@ export const lNumber = Pr.regex('number', /^[+\-]?[0-9]+(\.[0-9]+)?/)
 
 export const $literal: Parser<LiteralStatement> =
     Pr.either(lNull, lUndefined, lBoolean, lNumber, lString)
-        .map((value): LiteralStatement => ({ type: 'LITERAL', value }))
+        .map((value, loc): LiteralStatement => ({ type: 'LITERAL', loc, value }))
         .withName('literal');
