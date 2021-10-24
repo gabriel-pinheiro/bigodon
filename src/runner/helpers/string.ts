@@ -24,23 +24,23 @@ function capitalizeAll(str: string): string {
 }
 
 function substring(str: any, start: number, end?: number): string {
-    ensure(typeof start === 'number', 'substring expects start to be a number');
-    ensure(typeof end === 'number' || typeof end === 'undefined', 'substring expects end to be a number or undefined');
+    ensure(typeof start === 'number', 'start must be a number');
+    ensure(typeof end === 'number' || typeof end === 'undefined', 'end must be a number or undefined');
     return String(str).substring(start, end);
 }
 
 function padLeft(str: any, length: number, char: string): string {
-    ensure(typeof length === 'number', 'padLeft expects length to be a number');
-    ensure(typeof char === 'undefined' || typeof char === 'string', 'padLeft expects char to be a string or undefined');
-    ensure(typeof char === 'undefined' || char.length === 1, 'padLeft expects char to be a single character');
+    ensure(typeof length === 'number', 'length must be a number');
+    ensure(typeof char === 'undefined' || typeof char === 'string', 'char must be a string or undefined');
+    ensure(typeof char === 'undefined' || char.length === 1, 'char must be a single character');
 
     return String(str).padStart(length, char);
 }
 
 function padRight(str: any, length: number, char: string): string {
-    ensure(typeof length === 'number', 'padRight expects length to be a number');
-    ensure(typeof char === 'undefined' || typeof char === 'string', 'padRight expects char to be a string or undefined');
-    ensure(typeof char === 'undefined' || char.length === 1, 'padRight expects char to be a single character');
+    ensure(typeof length === 'number', 'length must be a number');
+    ensure(typeof char === 'undefined' || typeof char === 'string', 'char must be a string or undefined');
+    ensure(typeof char === 'undefined' || char.length === 1, 'char must be a single character');
 
     return String(str).padEnd(length, char);
 }

@@ -18,7 +18,7 @@ function last(arr: any): any {
 
 function itemAt(arr: any, index: number): any {
     const idx = Number(index);
-    ensure(!isNaN(idx), 'itemAt expects second argument to be a number');
+    ensure(!isNaN(idx), 'second argument must be a number');
 
     if (!Array.isArray(arr)) {
         return null;
@@ -37,7 +37,7 @@ function length(arr: any): number {
 
 function after(arr: any, index: number): any {
     const idx = Number(index);
-    ensure(!isNaN(idx), 'after expects second argument to be a number');
+    ensure(!isNaN(idx), 'second argument must be a number');
 
     if (!Array.isArray(arr)) {
         return [];
@@ -48,7 +48,7 @@ function after(arr: any, index: number): any {
 
 function before(arr: any, index: number): any {
     const idx = Number(index);
-    ensure(!isNaN(idx), 'before expects second argument to be a number');
+    ensure(!isNaN(idx), 'second argument must be a number');
 
     if (!Array.isArray(arr)) {
         return [];
@@ -59,9 +59,9 @@ function before(arr: any, index: number): any {
 
 function slice(arr: any[], start: number, end: number): any[] {
     ensure(typeof start === 'number' || typeof start === 'undefined',
-        'slice expects second argument to be a number');
+        'second argument must be a number');
     ensure(typeof end === 'number' || typeof end === 'undefined',
-        'slice expects third argument to be a number');
+        'third argument must be a number');
 
     if (!Array.isArray(arr)) {
         return [];
@@ -171,8 +171,8 @@ function isEmpty(arr: any): boolean {
 
 
 function splice(arr: any[], start: number, deleteCount: number | undefined): any[] {
-    ensure(typeof start === 'number', 'splice expects first argument to be a number');
-    ensure(typeof deleteCount === 'number' || typeof deleteCount === 'undefined', 'splice expects second argument to be a number');
+    ensure(typeof start === 'number', 'first argument must be a number');
+    ensure(typeof deleteCount === 'number' || typeof deleteCount === 'undefined', 'second argument must be a number');
 
     if (!Array.isArray(arr)) {
         return [];
