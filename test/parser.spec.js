@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { parse } = require('..');
+const { parse, parseExpression } = require('..');
 const { VERSION } = require('../dist/parser/index');
 
 const { describe, it } = exports.lab = Lab.script();
@@ -134,6 +134,75 @@ describe('parser', () => {
         });
     });
 
+    it('should parse expression', () => {
+        const expression = 'and (eq foo "bar") (eq name "jose")';
+        const result = parseExpression(expression);
+        expect(result).to.equal({
+          loc: {
+            end: 35,
+            start: 0
+          },
+          params: [
+            {
+              loc: {
+                end: 17,
+                start: 5
+              },
+              params: [
+                {
+                  loc: {
+                    end: 11,
+                    start: 8
+                  },
+                  params: [],
+                  path: 'foo',
+                  type: 'EXPRESSION'
+                },
+                {
+                  loc: {
+                    end: 17,
+                    start: 12
+                  },
+                  type: 'LITERAL',
+                  value: 'bar'
+                }
+              ],
+              path: 'eq',
+              type: 'EXPRESSION'
+            },
+            {
+              loc: {
+                end: 34,
+                start: 20
+              },
+              params: [
+                {
+                  loc: {
+                    end: 27,
+                    start: 23
+                  },
+                  params: [],
+                  path: 'name',
+                  type: 'EXPRESSION'
+                },
+                {
+                  loc: {
+                    end: 34,
+                    start: 28
+                  },
+                  type: 'LITERAL',
+                  value: 'jose'
+                }
+              ],
+              path: 'eq',
+              type: 'EXPRESSION'
+            }
+          ],
+          path: 'and',
+          type: 'EXPRESSION'
+        });
+    });
+
     it('should escape open mustaches', () => {
         const text = "hello \\{{ world";
         const result = parse(text);
@@ -162,5 +231,15 @@ describe('parser', () => {
     it('should fail on unexpected close mustache', () => {
         const text = 'some text}}';
         expect(() => parse(text)).to.throw(/column 10/);
+    });
+
+    it('should fail on parsing non string', () => {
+        const template = 1;
+        expect(() => parse(template)).to.throw('Template must be a string');
+    });
+
+    it('should fail on parsing non string expression', () => {
+        const expression = 1;
+        expect(() => parseExpression(expression)).to.throw('Expression must be a string');
     });
 });

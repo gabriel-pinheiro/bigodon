@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { compile, run, default: Bigodon } = require('../dist');
+const { compile, compileExpression, run, default: Bigodon } = require('../dist');
 const { VERSION } = require('../dist/parser/index');
 
 const { describe, it } = exports.lab = Lab.script();
@@ -305,6 +305,33 @@ describe('runner', () => {
                 code: 'FOO',
                 items: [],
             });
+        });
+    });
+
+    describe('expressions', () => {
+        it('should return undefined with literal with no value', async () => {
+            const templ = compileExpression('foo');
+            expect(await templ()).to.equal(undefined);
+        });
+
+        it('should return literal value', async () => {
+            const templ = compileExpression('foo');
+            expect(await templ({ foo: 'bar' })).to.equal('bar');
+        });
+
+        it('should evaluate expression as true', async () => {
+            const templ = compileExpression('eq foo "bar"');
+            expect(await templ({ foo: 'bar' })).to.equal(true);
+        });
+
+        it('should evaluate expression as false', async () => {
+            const templ = compileExpression('eq foo "bar"');
+            expect(await templ({ foo: 'barz' })).to.equal(false);
+        });
+
+        it('should evaluate more complex expression as true', async () => {
+            const templ = compileExpression('and (startsWith foo "b") (eq fruit "apple")');
+            expect(await templ({ foo: 'bar', fruit: 'apple' })).to.equal(true);
         });
     });
 });
