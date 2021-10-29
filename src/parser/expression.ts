@@ -68,7 +68,7 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
             case State.GOT_LITERAL: {
                 yield optionalSpaces;
 
-                const end = yield Pr.optional(peekEnd);
+                const end = yield Pr.optional(Pr.oneOf<string|true>(peekEnd, Pr.end()));
                 if (end) {
                     if (stack.length > 1) {
                         yield Pr.fail('Expected ")", make sure every parenthesis was closed');
@@ -94,7 +94,7 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
             case State.GOT_PATH: {
                 yield optionalSpaces;
 
-                const end = yield Pr.optional(peekEnd);
+                const end = yield Pr.optional(Pr.oneOf<string|true>(peekEnd, Pr.end()));
                 if (end) {
                     if (stack.length > 1) {
                         yield Pr.fail('Expected ")", make sure every parenthesis was closed');

@@ -1,6 +1,8 @@
 import { $template } from './parser';
-import { TemplateStatement } from './parser/statements';
-import { run as _run } from './runner';
+import { $expression } from './parser/expression';
+import { ExpressionStatement, LiteralStatement, TemplateStatement } from './parser/statements';
+import { LiteralValue, run as _run, runStatement } from './runner';
+import { Execution } from './runner/execution';
 import { BigodonOptions } from './runner/options';
 import { ensure } from './utils';
 
@@ -32,6 +34,18 @@ class Bigodon {
     };
 
     /**
+     * Parses a expression and returns an AST representing it.
+     * This can be persisted as JSON for later usage.
+     *
+     * @param {string} expression Bigodon expression to be parsed
+     * @return {ExpressionStatement | LiteralStatement} AST representing input expression
+     */
+    parseExpression = (expression: string): ExpressionStatement | LiteralStatement => {
+        ensure(typeof expression === 'string', 'Expression must be a string');
+        return $expression.parse(expression);
+    };
+
+    /**
      * Runs an AST returned by the {@link Bigodon#parse} method.
      *
      * @param {TemplateStatement} ast AST returned by {@link Bigodon#parse}.
@@ -46,6 +60,19 @@ class Bigodon {
     };
 
     /**
+     * Runs an AST returned by the {@link Bigodon#parseExpression} method.
+     *
+     * @param {ExpressionStatement | LiteralStatement} statement AST returned by {@link Bigodon#parseExpression}.
+     * @param {object?} context Context to be used when evaluating the expression.
+     * @param {BigodonOptions?} options Options to be used.
+     * @return {Promise<LiteralValue>} Promise that resolves to the rendered expression.
+     */
+    runExpression = async (statement: ExpressionStatement | LiteralStatement, context?: object, options?: BigodonOptions): Promise<LiteralValue> => {
+        const execution = Execution.of(context, this.helpers, options);
+        return await runStatement(execution, statement);
+    };
+
+    /**
      * Compiles a template and returns a function that, when called, executes it
      *
      * @param {string} template Bigodon template to be parsed
@@ -55,6 +82,17 @@ class Bigodon {
         const ast = this.parse(template);
         return (context?: object, options?: BigodonOptions) =>
             this.run(ast, context, options);
+    };
+
+    /**
+     * Compiles an expression and returns a function that, when called, executes it
+     *
+     * @param {string} expression Bigodon expression to be parsed
+     * @return {TemplateRunner} Function that executes the template
+     */
+    compileExpression = (expression: string): ((context?: object, options?: BigodonOptions) => Promise<LiteralValue>) => {
+        const ast = this.parseExpression(expression);
+        return (context?: object, options?: BigodonOptions) => this.runExpression(ast, context, options);
     };
 
     /**
@@ -82,7 +120,7 @@ const defaultBigodon = new Bigodon();
  * @param {string} template Bigodon template to be parsed
  * @return {TemplateStatement} AST representing input template
  */
-export const { parse } = defaultBigodon;
+export const { parse, parseExpression } = defaultBigodon;
 
 /**
  * Runs an AST returned by the {@link parse} method.
@@ -92,7 +130,7 @@ export const { parse } = defaultBigodon;
  * @param {BigodonOptions?} options Options to be used.
  * @return {Promise<string>} Promise that resolves to the rendered template.
  */
-export const { run } = defaultBigodon;
+export const { run, runExpression } = defaultBigodon;
 
 /**
  * Compiles a template and returns a function that, when called, executes it
@@ -100,7 +138,7 @@ export const { run } = defaultBigodon;
  * @param {string} template Bigodon template to be parsed
  * @return {TemplateRunner} Function that executes the template
  */
-export const { compile } = defaultBigodon;
+export const { compile, compileExpression } = defaultBigodon;
 
 export { TemplateStatement } from './parser/statements';
 export { BigodonOptions } from './runner/options';
