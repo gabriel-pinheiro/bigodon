@@ -334,4 +334,38 @@ describe('runner', () => {
             expect(await templ({ foo: 'bar', fruit: 'apple' })).to.equal(true);
         });
     });
+
+    describe('time limit', () => {
+        const bigArray = new Array(1e6).fill(1);
+        const source = `{{#each bigArray}}"foo"{{/each}}`;
+        const templ = compile(source);
+
+        it('should interrupt execution after limit', async () => {
+            // Dry running first so code is cached in memory
+            await templ({ bigArray }, { maxExecutionMillis: 5 }).catch(() => {});
+
+            // Creating execution before awaiting so this time isn't included
+            const promise = templ({ bigArray }, {
+                maxExecutionMillis: 50,
+            }).catch(() => {});
+
+
+            const start = Date.now();
+            await promise;
+            const elapsed = Date.now() - start;
+
+            expect(elapsed).to.be.below(55);
+            expect(elapsed).to.be.above(49);
+        });
+
+        it('should interrupt execution with error', async () => {
+            const promise = templ({ bigArray }, { maxExecutionMillis: 5 });
+            await expect(promise).to.reject('Execution time limit exceeded');
+        });
+
+        it('should not interrupt when execution takes less than limit', async () => {
+            const template = compile('Hello, {{foo}}');
+            expect(await template({ foo: 'bar' }, { maxExecutionMillis: 50 })).to.equal('Hello, bar');
+        });
+    });
 });

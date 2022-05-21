@@ -45,6 +45,10 @@ export async function runStatements(execution: Execution, statements: Statement[
 }
 
 export async function runStatement(execution: Execution, statement: Statement): Promise<LiteralValue> {
+    if (execution.elapsedMillis > execution.maxExecutionMillis) {
+        throw new Error(`Execution time limit exceeded`);
+    }
+
     switch (statement.type) {
         case 'TEXT':
             return statement.value;
