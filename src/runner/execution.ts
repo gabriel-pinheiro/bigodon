@@ -34,7 +34,7 @@ export class Execution {
      * @return {Execution} Execution with the added context
      */
     withChildContext(context: object): Execution {
-        return new Execution([...this.contexts, context], this.extraHelpers);
+        return new Execution([...this.contexts, context], this.extraHelpers, this.data);
     }
 
     /**
