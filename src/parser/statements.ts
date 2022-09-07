@@ -32,6 +32,7 @@ export type BlockStatement = {
     type: 'BLOCK';
     loc: Location;
     isNegated: boolean;
+    isNested?: boolean;
     expression: ExpressionStatement;
     statements: Statement[];
     elseStatements?: Statement[];
