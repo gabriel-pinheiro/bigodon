@@ -259,6 +259,45 @@ Invalid name
 
 ---
 
+Else blocks can be nested with the next helper, instead of writing:
+
+```hbs
+{{#is country 'BR'}}
+    Brazil
+{{else}}
+    {{#is country 'US'}}
+        United States
+    {{else}}
+        Other
+    {{/is}}
+{{/is}}
+```
+
+You can write:
+
+```hbs
+{{#is country 'BR'}}
+    Brazil
+{{else is country 'US'}}
+    United States
+{{else}}
+    Other
+{{/is}}
+```
+
+If you nest multiple helpers, you always close the first helper only:
+```hbs
+{{#gt (length nickname) 16}}
+    Your nickname is too long :(
+{{else is (length nickname) 3}}
+    Your nickname is as long as "cat" :)
+{{else}}
+    "{{nickname}}" is {{length nickname}} chars long
+{{/gt}} {{! Closing the first helper (gt), not "is" }}
+```
+
+---
+
 ## Loop Blocks
 
 You can also use blocks for loops. When given an array, the block will be executed for each element in the array. The context inside the block is changed to the item of the array:
