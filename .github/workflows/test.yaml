@@ -16,9 +16,9 @@ jobs:
       matrix:
         node-version: ['18', '20', '22', '24']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       name: Repository checkout
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v4
       name: Node ${{ matrix.node-version }} Setup
       with:
         node-version: ${{ matrix.node-version }}
