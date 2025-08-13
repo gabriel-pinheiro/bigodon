@@ -218,6 +218,36 @@ describe('parser', () => {
         });
     });
 
+    it('should escape close mustaches', () => {
+        const text = "hello \\}} world";
+        const result = parse(text);
+        expect(result).to.equal({
+            type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
+            version: VERSION,
+            statements: [{
+                type: 'TEXT',
+                loc: { start: 0, end: text.length },
+                value: 'hello }} world',
+            }],
+        });
+    });
+
+    it('should escape backslashes', () => {
+        const text = "hello \\\\ world";
+        const result = parse(text);
+        expect(result).to.equal({
+            type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
+            version: VERSION,
+            statements: [{
+                type: 'TEXT',
+                loc: { start: 0, end: text.length },
+                value: 'hello \\ world',
+            }],
+        });
+    });
+
     it('should fail on unexpected end block', () => {
         const text = '{{/foo}}';
         expect(() => parse(text)).to.throw(/this block wasn.t opened/i);
