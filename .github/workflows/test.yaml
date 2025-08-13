@@ -1,4 +1,4 @@
-name: Check code style
+name: Tests
 
 on:
   pull_request:
@@ -10,16 +10,19 @@ on:
       - actions
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['10', '12', '14', '16', '18', '20', '22', '24']
     steps:
     - uses: actions/checkout@v2
       name: Repository checkout
     - uses: actions/setup-node@v2
-      name: Node Setup
+      name: Node ${{ matrix.node-version }} Setup
       with:
-        node-version: '22'
+        node-version: ${{ matrix.node-version }}
     - name: Install dependencies
       run: npm install
     - name: Build and test
-      run: npm run lint
+      run: npm test
