@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import Pr from 'pierrejs';
 import { char } from './utils';
 
