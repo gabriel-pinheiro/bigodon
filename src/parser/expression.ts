@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import Pr, { Parser } from 'pierrejs';
 import { $literal } from './literal';
 import { ExpressionStatement, LiteralStatement, Location, Statement } from './statements';

@@ -13,12 +13,12 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       name: Repository checkout
-    - uses: actions/setup-node@v2
-      name: Node 14 Setup
+    - uses: actions/setup-node@v4
+      name: Node Setup
       with:
-        node-version: '14'
+        node-version: '22'
     - name: Install dependencies
       run: npm install
     - name: Build
@@ -26,7 +26,7 @@ jobs:
     - name: Generate coverage report
       run: npm run test:cov
     - name: Upload coverage report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: coverage
         path: coverage.html
