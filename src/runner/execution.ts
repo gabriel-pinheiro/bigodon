@@ -31,6 +31,21 @@ export class Execution {
         return this.contexts[this.contexts.length - 1];
     }
 
+    /**
+     * Push a new context on the stack.
+     * Used to change context allowing for $parent and $root access of previous contexts.
+     */
+    pushContext(context: object) {
+        this.contexts.push(context);
+    }
+
+    /**
+     * Pop the current context from the stack.
+     */
+    popContext() {
+        this.contexts.pop();
+    }
+
 
     /**
      * Milliseconds since the template execution started.
@@ -38,23 +53,6 @@ export class Execution {
      */
     get elapsedMillis(): number {
         return Date.now() - this.startMillis;
-    }
-
-    /**
-     * Creates Execution from current one with new child context.
-     * Used to change context allowing for $parent and $root access of previous contexts.
-     *
-     * @param {object} context New child context to be used by path expressions
-     * @return {Execution} Execution with the added context
-     */
-    withChildContext(context: object): Execution {
-        return new Execution(
-            this.startMillis,
-            [...this.contexts, context],
-            this.extraHelpers,
-            this.data,
-            this.maxExecutionMillis,
-        );
     }
 
     /**
