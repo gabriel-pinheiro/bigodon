@@ -163,40 +163,11 @@ describe('helpers', () => { describe('comparison', () => {
         });
     });
 
-    describe('if', () => {
-        it('should evaluate on true, only', async () => {
-            const templ = compile('{{#if foo}}yes{{else}}no{{/if}}');
-            expect(await templ({ foo: 'foo' })).to.equal('yes');
-            expect(await templ({ foo: '' })).to.equal('no');
-        });
-
-        it('should not change context', async () => {
-            const templ = compile('{{#if foo}}{{name}}{{else}}no{{/if}}');
-            expect(await templ({ foo: { name: 'wrong' }, name: 'foo' })).to.equal('foo');
-        });
-
-        it('should run only once', async () => {
-            const templ = compile('{{#if foo}}yes{{else}}no{{/if}}');
-            expect(await templ({ foo: [1, 2, 3] })).to.equal('yes');
-        });
-    });
-
     describe('unless', () => {
         it('should evaluate on false, only', async () => {
             const templ = compile('{{#unless foo}}yes{{else}}no{{/unless}}');
             expect(await templ({ foo: 'foo' })).to.equal('no');
             expect(await templ({ foo: '' })).to.equal('yes');
-        });
-    });
-
-    describe('typeof', () => {
-        it('should return typeof', async () => {
-            const templ = compile('{{typeof foo}}');
-            expect(await templ({ foo: 'foo' })).to.equal('string');
-            expect(await templ({ foo: 1 })).to.equal('number');
-            expect(await templ({ foo: true })).to.equal('boolean');
-            expect(await templ({ foo: undefined })).to.equal('undefined');
-            expect(await templ({ foo: {} })).to.equal('object');
         });
     });
 

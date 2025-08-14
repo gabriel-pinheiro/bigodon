@@ -31,10 +31,17 @@ When writing your Bigodon template, you can use helper functions to perform comm
 From [string helpers](#String-Helpers):
 - [split](#split): Splits a string into an array of strings on each separator. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L6); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L89-L95))
 
+## Code Helpers
+
+- [if](#if): Runs a block if the parameter is truthy without changing context. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L2); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L11-L27))
+- [typeof](#typeof): Returns the type of the argument. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L3); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L29-L38))
+- [with](#with): Runs a block with the given context. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L4); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L40-L74))
+- [return](#return): Halts the execution and the template will return what has already been rendered. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L5-L8); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L76-L97))
+
+
 ## Comparison Helpers
 
-- [if](#if): Runs a block if the parameter is truthy without changing context. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L10); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L166-L182))
-- [unless](#unless): Runs a block if the parameter is falsy without changing context. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L11); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L184-L190))
+- [unless](#unless): Runs a block if the parameter is falsy without changing context. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L10); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L166-L172))
 - [and](#and): Returns true if all arguments are truthy. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L1); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L39-L64))
 - [or](#or): Returns true if any argument is truthy. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L2); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L66-L91))
 - [not](#not): Returns true if the argument is falsy. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L3); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L93-L99))
@@ -44,8 +51,7 @@ From [string helpers](#String-Helpers):
 - [gte](#gte): Returns true if the first argument is greater than or equal to the second. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L7); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L117-L131))
 - [lt](#lt): Returns true if the first argument is less than the second. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L8); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L133-L148))
 - [lte](#lte): Returns true if the first argument is less than or equal to the second. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L9); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L150-L164))
-- [typeof](#typeof): Returns the type of the argument. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L12); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L192-L201))
-- [default](#default): Returns the first argument that is not undefined or null. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L13); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L203-L228))
+- [default](#default): Returns the first argument that is not undefined or null. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L11); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L174-L199))
 - [coalesce](#coalesce): Alias of [default](#default).
 - [firstNonNull](#firstNonNull): Alias of [default](#default).
 
@@ -99,10 +105,12 @@ From [array helpers](#Array-Helpers):
 - [join](#join): Joins an array of items into a string with a separator. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts#L112-L118); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js#L260-L279))
 
 From [comparison helpers](#Comparison-Helpers):
-- [typeof](#typeof): Returns the type of the argument. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L12); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L192-L201))
-- [default](#default): Returns the first argument that is not undefined or null. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L13); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L203-L228))
+- [default](#default): Returns the first argument that is not undefined or null. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts#L11); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js#L174-L199))
 - [coalesce](#coalesce): Alias of [default](#default).
 - [firstNonNull](#firstNonNull): Alias of [default](#default).
+
+From [code helpers](#Code-Helpers):
+- [typeof](#typeof): Returns the type of the argument. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L3); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L29-L38))
 
 ## Examples
 
