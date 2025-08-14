@@ -30,14 +30,20 @@ export async function runStatements(execution: Execution, statements: Statement[
     let result = '';
 
     for (const statement of statements) {
+        if (execution.isHalted) {
+            break;
+        }
+
         const stmtResult = await runStatement(execution, statement);
         if (stmtResult === null || typeof stmtResult === 'undefined') {
             continue;
         }
+
         if (typeof stmtResult === 'object') {
             result += Object.prototype.toString.call(stmtResult);
             continue;
         }
+
         result += String(stmtResult);
     }
 
