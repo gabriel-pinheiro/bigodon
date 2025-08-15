@@ -197,6 +197,238 @@ George, you got 2 comments:
 
 </details>
 
+### **itemAt**
+
+`itemAt` returns the item at the given index from an array.
+
+#### Example:
+```hbs
+First item: {{itemAt fruits 0}}
+Second item: {{itemAt fruits 1}}
+Item at position {{pos}}: {{itemAt fruits pos}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "fruits": ["apple", "banana", "orange"],
+    "pos": 2
+}
+```
+
+### Generated output
+```
+First item: apple
+Second item: banana
+Item at position 2: orange
+```
+
+</details>
+
+---
+
+### **slice**
+
+`slice` returns a slice of an array from the specified index(es). When given one argument, it returns items from that index to the end. When given two arguments, it returns items from the first index up to (but not including) the second index.
+
+#### Examples:
+```hbs
+Last two items:
+{{#slice fruits 1}}
+- {{$this}}
+{{/slice}}
+```
+
+```hbs
+Middle items:
+{{#slice fruits 1 3}}
+- {{$this}}
+{{/slice}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "fruits": ["apple", "banana", "orange", "grape"]
+}
+```
+
+### Generated output (first example)
+```
+Last two items:
+- banana
+- orange
+- grape
+```
+
+### Generated output (second example)
+```
+Middle items:
+- banana
+- orange
+```
+
+</details>
+
+---
+
+### **includes**
+
+`includes` returns true if the given item is in an array or if a substring is found in a string.
+
+#### Examples with arrays:
+```hbs
+{{#if (includes fruits "banana")}}
+  We have bananas!
+{{else}}
+  No bananas available.
+{{/if}}
+```
+
+#### Examples with strings:
+```hbs
+{{#if (includes message "error")}}
+  This is an error message.
+{{/if}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context (array example)
+```json
+{
+    "fruits": ["apple", "banana", "orange"]
+}
+```
+
+### Generated output (array example)
+```
+  We have bananas!
+```
+
+### Context (string example)
+```json
+{
+    "message": "An error occurred while processing"
+}
+```
+
+### Generated output (string example)
+```
+  This is an error message.
+```
+
+</details>
+
+---
+
+### **pluck**
+
+`pluck` extracts a specific property from each object in an array, returning an array of those property values.
+
+#### Example:
+```hbs
+User names: {{join (pluck users "name") ", "}}
+User IDs: {{join (pluck users "id") ", "}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "users": [
+        {"id": 1, "name": "Alice", "age": 30},
+        {"id": 2, "name": "Bob", "age": 25},
+        {"id": 3, "age": 35}
+    ]
+}
+```
+
+### Generated output
+```
+User names: Alice, Bob
+User IDs: 1, 2
+```
+
+</details>
+
+---
+
+### **splice**
+
+`splice` removes elements from an array starting at the specified index and returns the removed elements. Takes a start index and optionally a delete count.
+
+#### Example:
+```hbs
+Removed items:
+{{#splice items 1 2}}
+- {{$this}}
+{{/splice}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "items": ["first", "second", "third", "fourth", "fifth"]
+}
+```
+
+### Generated output
+```
+Removed items:
+- second
+- third
+```
+
+</details>
+
+---
+
+### **sort**
+
+`sort` sorts an array of numbers or strings. Numbers are sorted numerically, strings are sorted alphabetically (case-insensitive). An optional second parameter can be set to true for descending order.
+
+#### Examples:
+```hbs
+Numbers (ascending): {{join (sort numbers) ", "}}
+Numbers (descending): {{join (sort numbers true) ", "}}
+Words (ascending): {{join (sort words) ", "}}
+Words (descending): {{join (sort words true) ", "}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "numbers": [100, 14, 78, 90, -100],
+    "words": ["banana", "Orange", "apple", "Mango"]
+}
+```
+
+### Generated output
+```
+Numbers (ascending): -100, 14, 78, 90, 100
+Numbers (descending): 100, 90, 78, 14, -100
+Words (ascending): apple, banana, Mango, Orange
+Words (descending): Orange, Mango, banana, apple
+```
+
+</details>
+
 ---
 
 ### **forEach**
@@ -234,6 +466,96 @@ George, you got 2 comments:
 
 </details>
 
+### **with**
+
+`with` runs a block with the given value as the new context. This allows you to access properties of an object or work with a specific value without needing to reference the full path.
+
+#### Example:
+```hbs
+{{#with user}}
+  Name: {{name}}
+  Email: {{email}}
+  {{#with address}}
+    City: {{city}}
+    Country: {{country}}
+  {{/with}}
+{{/with}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "user": {
+        "name": "Alice",
+        "email": "alice@example.com",
+        "address": {
+            "city": "New York",
+            "country": "USA"
+        }
+    }
+}
+```
+
+### Generated output
+```
+  Name: Alice
+  Email: alice@example.com
+    City: New York
+    Country: USA
+```
+
+</details>
+
+---
+
+### **return**
+
+`return` halts template execution immediately and returns what has already been rendered up to that point. This is useful for conditional early termination.
+
+#### Example:
+```hbs
+Processing started...
+{{#if shouldStop}}
+{{return}}
+{{/if}}
+This will only show if shouldStop is false.
+Processing completed.
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context (with shouldStop: true)
+```json
+{
+    "shouldStop": true
+}
+```
+
+### Generated output (with shouldStop: true)
+```
+Processing started...
+```
+
+### Context (with shouldStop: false)
+```json
+{
+    "shouldStop": false
+}
+```
+
+### Generated output (with shouldStop: false)
+```
+Processing started...
+This will only show if shouldStop is false.
+Processing completed.
+```
+
+</details>
+
 ---
 
 ### **or**
@@ -261,6 +583,225 @@ George, you got 2 comments:
 ### Generated output
 ```
 BANANA is a fruit
+```
+
+</details>
+
+---
+
+### **startsWith**
+
+`startsWith` returns true if a string starts with the given prefix. Works with both strings and numbers.
+
+#### Example:
+```hbs
+{{#startsWith filename "temp_"}}
+  This is a temporary file.
+{{/startsWith}}
+
+{{#startsWith phone "555"}}
+  This is a 555 number.
+{{/startsWith}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "filename": "temp_data.txt",
+    "phone": "5551234567"
+}
+```
+
+### Generated output
+```
+  This is a temporary file.
+
+  This is a 555 number.
+```
+
+</details>
+
+---
+
+### **endsWith**
+
+`endsWith` returns true if a string ends with the given suffix. Works with both strings and numbers.
+
+#### Example:
+```hbs
+{{#endsWith filename ".pdf"}}
+  This is a PDF file.
+{{/endsWith}}
+
+{{#endsWith id "00"}}
+  This ID ends with 00.
+{{/endsWith}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "filename": "document.pdf",
+    "id": "12300"
+}
+```
+
+### Generated output
+```
+  This is a PDF file.
+
+  This ID ends with 00.
+```
+
+</details>
+
+---
+
+### **append**
+
+`append` concatenates multiple strings together into one string.
+
+#### Example:
+```hbs
+Full name: {{append firstName " " lastName}}
+File path: {{append baseDir "/" filename ".txt"}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "baseDir": "/home/user",
+    "filename": "document"
+}
+```
+
+### Generated output
+```
+Full name: John Doe
+File path: /home/user/document.txt
+```
+
+</details>
+
+---
+
+### **capitalize**
+
+`capitalize` capitalizes the first letter of a string while keeping the rest unchanged.
+
+#### Example:
+```hbs
+Greeting: {{capitalize greeting}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "greeting": "hello world"
+}
+```
+
+### Generated output
+```
+Greeting: Hello world
+```
+
+</details>
+
+---
+
+### **capitalizeAll**
+
+`capitalizeAll` capitalizes the first letter of each word in a string.
+
+#### Example:
+```hbs
+Title: {{capitalizeAll title}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "title": "the quick brown fox"
+}
+```
+
+### Generated output
+```
+Title: The Quick Brown Fox
+```
+
+</details>
+
+---
+
+### **split**
+
+`split` divides a string into an array of substrings using a separator. Often used with the `each` helper to iterate over the parts.
+
+#### Examples:
+```hbs
+{{#each (split tags ",")}}
+- {{trim $this}}
+{{/each}}
+```
+
+```hbs
+Path segments:
+{{#each (split path "/")}}
+  {{#if $this}}Segment: {{$this}}{{/if}}
+{{/each}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context (first example)
+```json
+{
+    "tags": "javascript,react,node,web"
+}
+```
+
+### Generated output (first example)
+```
+- javascript
+- react
+- node
+- web
+```
+
+### Context (second example)
+```json
+{
+    "path": "/home/user/documents/file.txt"
+}
+```
+
+### Generated output (second example)
+```
+Path segments:
+  Segment: home
+  Segment: user
+  Segment: documents
+  Segment: file.txt
 ```
 
 </details>
