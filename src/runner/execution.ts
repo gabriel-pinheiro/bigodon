@@ -5,17 +5,24 @@ import { BigodonOptions } from './options';
  */
 export class Execution {
     /**
+     * Indicates whether the execution has been halted by a flow control helper.
+     */
+    public isHalted = false;
+
+    /**
+     * Timestamp of the template execution start
+     */
+    private startMillis = Date.now();
+
+    /**
      * Template execution, holds contexts, extra helpers, data.
      *
-     * @param {number} startMillis Timestamp of the template execution start
      * @param {object[]} contexts Contexts from which bigodon path expressions will evaluate
      * @param {Map<string, Function>} extraHelpers Extra helpers that can be called other than default bigodon helpers
      * @param {object?} data Data that cannot be accessed from the template but can be accessed and modified from helpers
      * @param {number} maxExecutionMillis Maximum milliseconds allowed for the template execution
      */
     private constructor(
-        private readonly startMillis: number,
-
         public readonly contexts: object[],
         public readonly extraHelpers: Map<string, Function>,
         public readonly data: object,
@@ -31,6 +38,27 @@ export class Execution {
         return this.contexts[this.contexts.length - 1];
     }
 
+    /**
+     * Push a new context on the stack.
+     * Used to change context allowing for $parent and $root access of previous contexts.
+     */
+    pushContext(context: object) {
+        this.contexts.push(context);
+    }
+
+    /**
+     * Pop the current context from the stack.
+     */
+    popContext() {
+        this.contexts.pop();
+    }
+
+    /**
+     * Halt the execution.
+     */
+    halt() {
+        this.isHalted = true;
+    }
 
     /**
      * Milliseconds since the template execution started.
@@ -38,23 +66,6 @@ export class Execution {
      */
     get elapsedMillis(): number {
         return Date.now() - this.startMillis;
-    }
-
-    /**
-     * Creates Execution from current one with new child context.
-     * Used to change context allowing for $parent and $root access of previous contexts.
-     *
-     * @param {object} context New child context to be used by path expressions
-     * @return {Execution} Execution with the added context
-     */
-    withChildContext(context: object): Execution {
-        return new Execution(
-            this.startMillis,
-            [...this.contexts, context],
-            this.extraHelpers,
-            this.data,
-            this.maxExecutionMillis,
-        );
     }
 
     /**
@@ -67,7 +78,6 @@ export class Execution {
      */
     static of(context: object, extraHelpers: Map<string, Function> = new Map(), options: BigodonOptions = {}): Execution {
         return new Execution(
-            Date.now(),
             [context],
             extraHelpers,
             options.data,

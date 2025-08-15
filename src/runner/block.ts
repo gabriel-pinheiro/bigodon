@@ -36,7 +36,12 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
         let result = '';
 
         for (const item of value) {
-            result += await runStatements(execution.withChildContext(item), block.statements);
+            execution.pushContext(item);
+            result += await runStatements(execution, block.statements);
+            execution.popContext();
+            if (execution.isHalted) {
+                break;
+            }
         }
 
         return result;
@@ -44,7 +49,10 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
 
     // Object
     if (typeof value === 'object') {
-        return await runStatements(execution.withChildContext(value), block.statements);
+        execution.pushContext(value);
+        const result = await runStatements(execution, block.statements);
+        execution.popContext();
+        return result;
     }
 
     // Truthy value
