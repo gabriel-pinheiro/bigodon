@@ -17,7 +17,7 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
         }
 
         // Value is false
-    return await runStatements(execution, block.statements);
+        return await runStatements(execution, block.statements);
     }
 
     // Falsy value or empty array
