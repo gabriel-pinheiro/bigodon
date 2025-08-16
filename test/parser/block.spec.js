@@ -1,8 +1,8 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { parse, compile } = require('..');
-const { VERSION } = require('../dist/parser');
+const { parse, compile } = require('../../dist');
+const { VERSION } = require('../../dist/parser');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;

@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { $literal } = require('../dist/parser/literal');
+const { $literal } = require('../../dist/parser/literal');
 
 function lengthOf(value) {
     if(value === void 0) return 9;

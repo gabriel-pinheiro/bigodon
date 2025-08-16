@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { compile, default: Bigodon } = require('..');
+const { compile, default: Bigodon } = require('../../dist');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;

@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { $expression } = require('../dist/parser/expression');
+const { $expression } = require('../../dist/parser/expression');
 const parse = code => $expression.parse(code + '}}');
 
 const { describe, it } = exports.lab = Lab.script();
