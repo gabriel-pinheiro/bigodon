@@ -260,12 +260,12 @@ describe('parser', () => {
             });
         });
 
-        it('should parse nested blocks', () => {
+        it('should parse else blocks with params', () => {
             const result = parse('{{#outer}}first{{else inner}}second{{/outer}}');
             expect(result).to.equal({
               "type": "TEMPLATE",
               "loc": { start: 0, end: 45 },
-              "version": 2,
+              "version": VERSION,
               "statements": [
                 {
                   "type": "BLOCK",

@@ -38,7 +38,7 @@ const buildBlock = (loc: Location,
     return block;
 };
 
-export const VERSION = 2;
+export const VERSION = 3;
 
 export const $text: Parser<Statement> = text
     .map((value, loc): TextStatement => ({ type: 'TEXT', loc, value }))
