@@ -6,12 +6,13 @@ import { runHelperExpression } from './helper';
 import { helpers } from './helpers';
 import { BigodonOptions } from './options';
 import { runPathExpression } from './path-expression';
+import { runAssignment, runVariable } from './variables';
 
 export type LiteralValue =
     string | number | boolean | null | undefined | object;
 
 const MIN_VERSION = 1;
-const MAX_VERSION = 2;
+const MAX_VERSION = 3;
 
 export async function run(ast: TemplateStatement,
                           context: object = {},
@@ -68,7 +69,17 @@ export async function runStatement(execution: Execution, statement: Statement): 
             return await runExpression(execution, statement);
         case 'BLOCK':
             return await runBlock(execution, statement);
+        case 'ASSIGNMENT':
+            return await runAssignment(execution, statement);
+        case 'VARIABLE':
+            return await runVariable(execution, statement);
+        case 'TEMPLATE':
+            // Shouldn't happen, only here for TS's exhaustiveness checking below
+            /* $lab:coverage:off$ */
+            throw new Error('Template statements cannot be nested');
+            /* $lab:coverage:on$ */
         default:
+            statement satisfies never;
             return null;
     }
 }

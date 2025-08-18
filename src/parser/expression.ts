@@ -1,10 +1,8 @@
 import Pr, { Parser } from 'pierrejs';
 import { $literal } from './literal';
-import { ExpressionStatement, LiteralStatement, Location, Statement } from './statements';
+import { ExpressionStatement, Location, Statement, ValueStatement } from './statements';
 import { optionalSpaces } from './utils';
-
-export type ExpressionOrLiteralStatement = ExpressionStatement | LiteralStatement;
-export type ExpresionRecursiveArray = ExpressionOrLiteralStatement[];
+import { $variable } from './variables';
 
 /* $lab:coverage:off$ */
 enum State {
@@ -24,7 +22,7 @@ const path: Parser<ExpressionStatement> = Pr.regex('context path', /^[a-zA-Z0-9\
     params: [],
 }));
 
-export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('expression', function* () {
+export const $expression: Parser<ValueStatement> = Pr.context('expression', function* () {
     const stack = [[]];
     let state: State = State._START;
 
@@ -33,10 +31,9 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
             return expr;
         }
         const [stmt, ...params] = expr;
-        if (stmt.type === 'LITERAL') {
-            return stmt;
+        if (stmt.type === 'EXPRESSION') {
+            stmt.params = params.map(expressionFromStack);
         }
-        stmt.params = params.map(expressionFromStack);
         return stmt;
     };
 
@@ -51,6 +48,13 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
                 if (l) {
                     topOfStack(stack).push(l);
                     state = State.GOT_LITERAL;
+                    break;
+                }
+
+                const v = yield Pr.optional($variable);
+                if (v) {
+                    topOfStack(stack).push(v);
+                    state = State.GOT_LITERAL; // Variables behave like literals in terms of parsing
                     break;
                 }
 
@@ -101,7 +105,7 @@ export const $expression: Parser<ExpressionOrLiteralStatement> = Pr.context('exp
                     return expressionFromStack(stack[0]);
                 }
 
-                const param = yield Pr.optional(Pr.either<Statement>($literal, path));
+                const param = yield Pr.optional(Pr.either<Statement>($literal, $variable, path));
                 if (param) {
                     topOfStack(stack).push(param);
                     state = State.GOT_PATH;

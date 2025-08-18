@@ -1,8 +1,8 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { parse, parseExpression } = require('..');
-const { VERSION } = require('../dist/parser/index');
+const { parse, parseExpression } = require('../../dist');
+const { VERSION } = require('../../dist/parser/index');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -32,7 +32,46 @@ describe('parser', () => {
         });
     });
 
-    it('should parse mustaches', () => {
+    it('should parse mustaches with path expressions', () => {
+        const text = '{{ foo }}';
+        const result = parse(text);
+        expect(result).to.equal({
+            type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
+            version: VERSION,
+            statements: [{
+                type: 'MUSTACHE',
+                loc: { start: 0, end: text.length },
+                expression: {
+                    type: 'EXPRESSION',
+                    loc: { start: 2, end: 7 },
+                    path: 'foo',
+                    params: [],
+                },
+            }],
+        });
+    });
+
+    it('should parse mustaches with literals', () => {
+        const text = '{{ "foo" }}';
+        const result = parse(text);
+        expect(result).to.equal({
+            type: 'TEMPLATE',
+            loc: { start: 0, end: text.length },
+            version: VERSION,
+            statements: [{
+                type: 'MUSTACHE',
+                loc: { start: 0, end: text.length },
+                expression: {
+                    type: 'LITERAL',
+                    loc: { start: 2, end: 9 },
+                    value: 'foo',
+                },
+            }],
+        });
+    });
+
+    it('should parse mustaches with parameters', () => {
         const text = '{{ foo "bar" }}';
         const result = parse(text);
         expect(result).to.equal({

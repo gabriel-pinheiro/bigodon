@@ -1,3 +1,4 @@
+import { LiteralValue } from '.';
 import { BigodonOptions } from './options';
 
 /**
@@ -13,6 +14,11 @@ export class Execution {
      * Timestamp of the template execution start
      */
     private startMillis = Date.now();
+
+    /**
+     * Bigodon variables
+     */
+    public readonly variables: Record<string, LiteralValue> = {};
 
     /**
      * Template execution, holds contexts, extra helpers, data.
