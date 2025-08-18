@@ -74,7 +74,10 @@ export async function runStatement(execution: Execution, statement: Statement): 
         case 'VARIABLE':
             return await runVariable(execution, statement);
         case 'TEMPLATE':
+            // Shouldn't happen, only here for TS's exhaustiveness checking below
+            /* $lab:coverage:off$ */
             throw new Error('Template statements cannot be nested');
+            /* $lab:coverage:on$ */
         default:
             statement satisfies never;
             return null;

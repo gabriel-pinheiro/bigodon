@@ -201,7 +201,7 @@ export const $template = Pr.context('mustache', function* () {
 
                     // Else followed by variable
                     if (stmt.expression.type === 'VARIABLE') {
-                        yield Pr.fail("{{else}} blocks cannot have variable parameters. Use '{{else if $var}}' instead.");
+                        yield Pr.fail('{{else}} blocks cannot have variable parameters. Use "{{else if $var}}" instead.');
                         // Never happens, just for typescript to know that below here, expression is not VariableStatement
                         /* $lab:coverage:off$ */
                         break;
