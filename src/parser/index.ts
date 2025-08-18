@@ -2,13 +2,14 @@ import Pr, { Parser } from 'pierrejs';
 import { $expression } from './expression';
 import {
     BlockStatement, CommentStatement, ExpressionStatement,
-    LiteralStatement, Location, MustacheStatement, Statement,
-    TemplateStatement, TextStatement,
+    Location, MustacheStatement, Statement,
+    TemplateStatement, TextStatement, ValueStatement,
 } from './statements';
 import {
     atPos, closeMustache, openMustache,
     optionalSpaces, peek, text, char,
 } from './utils';
+import { $assignment } from './variables';
 
 const topOfStack = <T>(stack: T[]): T => stack[stack.length - 1];
 const topOfStackStmts = (stack: (Omit<TemplateStatement, 'loc'> | BlockStatement)[]): Statement[] => {
@@ -79,13 +80,26 @@ export const $template = Pr.context('mustache', function* () {
                     break;
                 }
 
+                case '=': {
+                    topOfStackStmts(stack).push(yield $assignment);
+                    break;
+                }
+
                 case '#':
                 case '^': {
                     const typeChar = yield char;
-                    const expression: ExpressionStatement | LiteralStatement = yield $expression;
+                    const expression: ValueStatement = yield $expression;
                     if (expression.type === 'LITERAL') {
                         yield Pr.fail(`Blocks must receive path expressions or helpers. Literal blocks are not allowed.`);
                         // Never happens, just for typescript to know that below here, expression is not LiteralStatement
+                        /* $lab:coverage:off$ */
+                        return;
+                        /* $lab:coverage:on$ */
+                    }
+
+                    if (expression.type === 'VARIABLE') {
+                        yield Pr.fail(`Variable blocks are not allowed, use '{{#if $var}}' for conditionals or '{{#each $var}}' for loops instead.`);
+                        // Never happens, just for typescript to know that below here, expression is not VariableStatement
                         /* $lab:coverage:off$ */
                         return;
                         /* $lab:coverage:on$ */
@@ -97,7 +111,7 @@ export const $template = Pr.context('mustache', function* () {
 
                 case '/': {
                     yield char; // Consuming '/'
-                    const expression: ExpressionStatement | LiteralStatement = yield $expression;
+                    const expression: ValueStatement = yield $expression;
                     if (expression.type === 'LITERAL') {
                         yield Pr.fail(`Unexpected {{/${expression.value}}}. Literal blocks are not allowed to be closed.`);
                         // Never happens, just for typescript to know that below here, expression is not LiteralStatement
@@ -105,6 +119,14 @@ export const $template = Pr.context('mustache', function* () {
                         return;
                         /* $lab:coverage:on$ */
                     }
+                    if (expression.type === 'VARIABLE') {
+                        yield Pr.fail(`Unexpected {{/${expression.name}}}. Variable blocks are not allowed.`);
+                        // Never happens, just for typescript to know that below here, expression is not VariableStatement
+                        /* $lab:coverage:off$ */
+                        return;
+                        /* $lab:coverage:on$ */
+                    }
+
                     if (expression.params.length > 0) {
                         yield Pr.fail(`Closing blocks cannot have parameters`);
                     }
@@ -172,6 +194,15 @@ export const $template = Pr.context('mustache', function* () {
                     if (stmt.expression.type === 'LITERAL') {
                         yield Pr.fail('{{else}} blocks cannot have parameters');
                         // Never happens, just for typescript to know that below here, expression is not LiteralStatement
+                        /* $lab:coverage:off$ */
+                        break;
+                        /* $lab:coverage:on$ */
+                    }
+
+                    // Else followed by variable
+                    if (stmt.expression.type === 'VARIABLE') {
+                        yield Pr.fail("{{else}} blocks cannot have variable parameters. Use '{{else if $var}}' instead.");
+                        // Never happens, just for typescript to know that below here, expression is not VariableStatement
                         /* $lab:coverage:off$ */
                         break;
                         /* $lab:coverage:on$ */

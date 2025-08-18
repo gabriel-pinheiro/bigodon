@@ -15,17 +15,19 @@ export type CommentStatement = {
     value: string;
 };
 
+export type ValueStatement = ExpressionStatement | LiteralStatement | VariableStatement;
+
 export type ExpressionStatement = {
     type: 'EXPRESSION';
     loc: Location;
     path: string;
-    params: (ExpressionStatement | LiteralStatement)[];
+    params: ValueStatement[];
 };
 
 export type MustacheStatement = {
     type: 'MUSTACHE';
     loc: Location;
-    expression: ExpressionStatement | LiteralStatement;
+    expression: ValueStatement;
 };
 
 export type BlockStatement = {
@@ -51,5 +53,26 @@ export type LiteralStatement = {
     value: string | number | boolean | null | undefined;
 };
 
-export type Statement = TextStatement | LiteralStatement | CommentStatement | BlockStatement |
-                        ExpressionStatement | MustacheStatement | TemplateStatement;
+export type VariableStatement = {
+    type: 'VARIABLE';
+    loc: Location;
+    name: string;
+};
+
+export type AssignmentStatement = {
+    type: 'ASSIGNMENT';
+    loc: Location;
+    variable: string;
+    expression: ValueStatement;
+};
+
+export type Statement =
+    | TextStatement
+    | LiteralStatement
+    | CommentStatement
+    | BlockStatement
+    | ExpressionStatement
+    | MustacheStatement
+    | TemplateStatement
+    | VariableStatement
+    | AssignmentStatement;

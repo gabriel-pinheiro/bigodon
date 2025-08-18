@@ -1,6 +1,6 @@
 import { $template } from './parser';
 import { $expression } from './parser/expression';
-import { ExpressionStatement, LiteralStatement, TemplateStatement } from './parser/statements';
+import { TemplateStatement, ValueStatement } from './parser/statements';
 import { LiteralValue, run as _run, runStatement } from './runner';
 import { Execution } from './runner/execution';
 import { BigodonOptions } from './runner/options';
@@ -34,13 +34,13 @@ class Bigodon {
     };
 
     /**
-     * Parses a expression and returns an AST representing it.
+     * Parses a bigodon expression into its AST representation.
      * This can be persisted as JSON for later usage.
      *
      * @param {string} expression Bigodon expression to be parsed
-     * @return {ExpressionStatement | LiteralStatement} AST representing input expression
+     * @return {ValueStatement} AST representing input expression
      */
-    parseExpression = (expression: string): ExpressionStatement | LiteralStatement => {
+    parseExpression = (expression: string): ValueStatement => {
         ensure(typeof expression === 'string', 'Expression must be a string');
         return $expression.parse(expression);
     };
@@ -62,12 +62,12 @@ class Bigodon {
     /**
      * Runs an AST returned by the {@link Bigodon#parseExpression} method.
      *
-     * @param {ExpressionStatement | LiteralStatement} statement AST returned by {@link Bigodon#parseExpression}.
+     * @param {ValueStatement} statement AST returned by {@link Bigodon#parseExpression}.
      * @param {object?} context Context to be used when evaluating the expression.
      * @param {BigodonOptions?} options Options to be used.
      * @return {Promise<LiteralValue>} Promise that resolves to the rendered expression.
      */
-    runExpression = async (statement: ExpressionStatement | LiteralStatement, context?: object, options?: BigodonOptions): Promise<LiteralValue> => {
+    runExpression = async (statement: ValueStatement, context?: object, options?: BigodonOptions): Promise<LiteralValue> => {
         const execution = Execution.of(context, this.helpers, options);
         return await runStatement(execution, statement);
     };
