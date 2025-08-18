@@ -62,7 +62,7 @@ export type VariableStatement = {
 export type AssignmentStatement = {
     type: 'ASSIGNMENT';
     loc: Location;
-    variable: string;
+    variable: VariableStatement;
     expression: ValueStatement;
 };
 

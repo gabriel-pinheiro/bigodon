@@ -6,6 +6,7 @@ import { runHelperExpression } from './helper';
 import { helpers } from './helpers';
 import { BigodonOptions } from './options';
 import { runPathExpression } from './path-expression';
+import { runAssignment, runVariable } from './variables';
 
 export type LiteralValue =
     string | number | boolean | null | undefined | object;
@@ -68,7 +69,14 @@ export async function runStatement(execution: Execution, statement: Statement): 
             return await runExpression(execution, statement);
         case 'BLOCK':
             return await runBlock(execution, statement);
+        case 'ASSIGNMENT':
+            return await runAssignment(execution, statement);
+        case 'VARIABLE':
+            return await runVariable(execution, statement);
+        case 'TEMPLATE':
+            throw new Error('Template statements cannot be nested');
         default:
+            statement satisfies never;
             return null;
     }
 }
