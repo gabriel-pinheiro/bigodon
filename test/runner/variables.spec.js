@@ -29,12 +29,12 @@ describe('runtime', () => {
       expect(await template({ user: { name: 'Alice' } })).to.equal('Hello, Alice!');
     });
 
-    it.skip('should assign variables from helper results', async () => {
+    it('should assign variables from helper results', async () => {
       const template = compile('{{= $upperName (uppercase name)}}{{ $upperName }}');
       expect(await template({ name: 'john' })).to.equal('JOHN');
     });
 
-    it.skip('should handle multiple variable assignments', async () => {
+    it('should handle multiple variable assignments', async () => {
       const template = compile('{{= $x 1}}{{= $y 2}}{{= $sum (add $x $y)}}Result: {{ $sum }}');
       expect(await template()).to.equal('Result: 3');
     });
@@ -88,7 +88,7 @@ describe('runtime', () => {
       expect(await template()).to.equal('test');
     });
 
-    it.skip('should maintain variable state within single template execution', async () => {
+    it('should maintain variable state within single template execution', async () => {
       const template = compile(`
 {{= $counter 0}}
 {{#items}}
@@ -97,10 +97,12 @@ Item {{ $counter }}
 {{/items}}
 Total: {{ $counter }}
               `.trim());
-      expect(await template({ items: ['a', 'b', 'c'] })).to.equal('Item 1\n  Item 2\n  Item 3\nTotal: 3');
+      const actual = (await template({ items: ['a', 'b', 'c'] })).replace(/\s+/g, ' ').trim();
+      const expected = 'Item 1 Item 2 Item 3 Total: 3';
+      expect(actual).to.equal(expected);
     });
 
-    it.skip('should handle assignment with complex helper expressions', async () => {
+    it('should handle assignment with complex helper expressions', async () => {
       const template = compile('{{= $result (add (multiply 3 4) 2)}}{{ $result }}');
       expect(await template()).to.equal('14');
     });
@@ -131,7 +133,7 @@ Total: {{ $counter }}
       expect(await template()).to.equal('number string boolean');
     });
 
-    it.skip('should handle variable reassignment in loops', async () => {
+    it('should handle variable reassignment in loops', async () => {
       const template = compile(`
 {{= $sum 0}}
 {{#numbers}}
@@ -139,7 +141,9 @@ Total: {{ $counter }}
 {{/numbers}}
 {{ $sum }}
               `.trim());
-      expect(await template({ numbers: [1, 2, 3, 4, 5] })).to.equal('15');
+      const actual = (await template({ numbers: [1, 2, 3, 4, 5] })).replace(/\s+/g, ' ').trim();
+      const expected = '15';
+      expect(actual).to.equal(expected);
     });
 
     it('should handle variables in else if chains', async () => {

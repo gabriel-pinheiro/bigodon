@@ -112,29 +112,29 @@ describe('parser', () => {
         });
       });
 
-      it.skip('should parse variable assignment with helper expression', () => {
+      it('should parse variable assignment with helper expression', () => {
         const result = parse('{{= $upperName (uppercase user.name)}}');
         expect(result).to.equal({
           "type": "TEMPLATE",
-          "loc": { start: 0, end: 39 },
+          "loc": { start: 0, end: 38 },
           "version": VERSION,
           "statements": [
             {
               "type": "ASSIGNMENT",
-              "loc": { start: 0, end: 39 },
+              "loc": { start: 0, end: 38 },
               "variable": {
                 "type": "VARIABLE",
-                "loc": { start: 4, end: 13 },
+                "loc": { start: 4, end: 14 },
                 "name": "$upperName"
               },
               "expression": {
                 "type": "EXPRESSION",
-                "loc": { start: 15, end: 37 },
+                "loc": { start: 15, end: 36 },
                 "path": "uppercase",
                 "params": [
                   {
                     "type": "EXPRESSION",
-                    "loc": { start: 25, end: 34 },
+                    "loc": { start: 26, end: 35 },
                     "path": "user.name",
                     "params": []
                   }
@@ -240,7 +240,7 @@ describe('parser', () => {
               },
               "expression": {
                 "type": "LITERAL",
-                "loc": { start: 13, end: 18 },
+                "loc": { start: 13, end: 15 },
                 "value": 42
               }
             }
@@ -268,11 +268,11 @@ describe('parser', () => {
       });
 
       it('should not allow assignment without expression', () => {
-        expect(() => parse('{{= $foo}}')).to.throw(/Expected literal, helper or context path/i);
+        expect(() => parse('{{= $foo}}')).to.throw(/Expected literal, variable, path or parenthesized expression/i);
       });
 
-      it.skip('should not allow assignment with multiple expressions', () => {
-        expect(() => parse('{{= $foo 42 24}}')).to.throw(/assignment requires a single expression/i);
+      it('should not allow assignment with multiple expressions', () => {
+        expect(() => parse('{{= $foo 42 24}}')).to.throw(/Assignments require a single expression/i);
       });
 
       it('should not allow assignment to literals', () => {
