@@ -518,3 +518,187 @@ Hello, 5!
 
 ---
 
+## Variables
+
+Variables allow you to store and reuse values within your templates. Variables are prefixed with `$` and can be assigned using the `=` operator:
+
+```hbs
+{{= $name "John"}}
+Hello, {{ $name }}!
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{}
+```
+
+### Generated output
+```
+Hello, John!
+```
+
+</details>
+
+---
+
+Variables can be assigned from context data:
+
+```hbs
+{{= $userName user.name}}
+Hello, {{ $userName }}!
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "user": {
+        "name": "Alice"
+    }
+}
+```
+
+### Generated output
+```
+Hello, Alice!
+```
+
+</details>
+
+---
+
+Variables can be assigned from helper results:
+
+```hbs
+{{= $upperName (uppercase name)}}
+Welcome, {{ $upperName }}!
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "name": "john"
+}
+```
+
+### Generated output
+```
+Welcome, JOHN!
+```
+
+</details>
+
+---
+
+Variables can be reassigned and used in complex expressions:
+
+```hbs
+{{= $x 1}}
+{{= $y 2}}
+{{= $sum (add $x $y)}}
+{{= $result (multiply $sum 10)}}
+Result: {{ $result }}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{}
+```
+
+### Generated output
+```
+Result: 30
+```
+
+</details>
+
+---
+
+Variables have global scoping - variables assigned inside blocks are available within that block, in sibling blocks, and in parent blocks:
+
+```hbs
+{{= $var "global"}}
+{{#condition}}
+    {{= $var "block"}}
+{{/condition}}
+Outside: {{ $var }}
+```
+
+<details>
+
+### Context
+```json
+{
+    "condition": true
+}
+```
+
+### Generated output
+```
+Outside: "block"
+```
+
+</details>
+
+---
+
+Variables can be used in loops and maintain state across iterations:
+
+```hbs
+{{= $sum 0}}
+{{#numbers}}
+    {{= $sum (add $sum $this)}}
+{{/numbers}}
+Total: {{ $sum }}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "numbers": [1, 2, 3, 4, 5]
+}
+```
+
+### Generated output
+```
+Total: 15
+```
+
+</details>
+
+---
+
+Undefined variables do not error and return empty strings:
+
+```hbs
+Value: "{{ $undefined }}"
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{}
+```
+
+### Generated output
+```
+Value: ""
+```
+
+</details>
