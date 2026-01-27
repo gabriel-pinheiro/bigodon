@@ -10,6 +10,8 @@
     "pretest": "npm run build",
     "test": "lab -v -t 100 -I require -a @hapi/code",
     "test:cov": "lab -I require -r html -o coverage.html",
+    "test:spec": "npm run test:setup:mustache-spec && lab -v -t 100 -I require -a @hapi/code test/spec.spec.js",
+    "test:setup:mustache-spec": "cd test && git clone https://github.com/mustache/spec.git mustache || true",
     "prepublish": "npm run build",
     "lint": "eslint -c eslint.js \"src/**/*.ts\"",
     "lint:fix": "eslint -c eslint.js \"src/**/*.ts\" --fix"
