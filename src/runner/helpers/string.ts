@@ -1,5 +1,5 @@
 import { ensure } from '../../utils';
-import { v4 as uuid } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 const append = (...args: any[]) => args.map(a => String(a)).join('');
 const uppercase = (str: any) => String(str).toUpperCase();
@@ -71,6 +71,6 @@ export const stringHelpers = Object.assign(Object.create(null), {
     capitalizeFirst: capitalize, toString, split, startsWith,
     endsWith, trimLeft, trimRight, trimStart: trimLeft,
     trimEnd: trimRight, replace, substring, padLeft,
-    capitalizeWords: capitalizeAll, uuid, json,
+    capitalizeWords: capitalizeAll, uuid: randomUUID, json,
     JSONstringify: json,
 });
