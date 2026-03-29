@@ -1,6 +1,6 @@
 import { LiteralValue } from '.';
 import { ExpressionStatement } from '../parser/statements';
-import { UNSAFE_KEYS } from '../utils';
+import { lookupOwnValue } from '../utils';
 import { Execution } from './execution';
 
 export function runPathExpression(execution: Execution, expression: ExpressionStatement): LiteralValue {
@@ -21,11 +21,12 @@ export function runPathExpression(execution: Execution, expression: ExpressionSt
     }
 
     for (const key of path) {
-        if (ctx === null || typeof ctx !== 'object' || Array.isArray(ctx) || UNSAFE_KEYS.has(key)) {
-            return void 0;
+        const resolved = lookupOwnValue(ctx, key);
+        if (typeof resolved === 'undefined') {
+            return undefined;
         }
 
-        ctx = ctx[key];
+        ctx = resolved;
     }
 
     return ctx;

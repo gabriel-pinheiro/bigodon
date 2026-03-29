@@ -48,6 +48,11 @@ describe('runner', () => {
             expect(await templ({ name: false })).to.equal('Hello, false!');
         });
 
+        it('should return empty for function-valued simple path expressions', async () => {
+            const templ = compile('Hello, {{ foo }}!');
+            expect(await templ({ foo: () => {} })).to.equal('Hello, !');
+        });
+
         it('should return deep path expressions', async () => {
             const templ = compile('Hello, {{ name.first }} {{ name.last }}!');
             expect(await templ({ name: { first: 'George', last: 'Schmidt' } })).to.equal('Hello, George Schmidt!');
@@ -56,6 +61,16 @@ describe('runner', () => {
             expect(await templ({ name: null })).to.equal('Hello,  !');
             expect(await templ({ name: 5 })).to.equal('Hello,  !');
             expect(await templ({ name: false })).to.equal('Hello,  !');
+        });
+
+        it('should return empty for function-valued deep path expressions', async () => {
+            const templ = compile('Hello, {{ foo.bar }}!');
+            expect(await templ({ foo: () => {} })).to.equal('Hello, !');
+        });
+
+        it('should return empty for function-valued own properties', async () => {
+            const templ = compile('{{ obj.fn }}');
+            expect(await templ({ obj: { fn() { return 'x'; } } })).to.equal('');
         });
 
         it('should allow $this for helper-path disambiguisation', async () => {
@@ -136,6 +151,16 @@ describe('runner', () => {
         it('should return literal value', async () => {
             const templ = compileExpression('foo');
             expect(await templ({ foo: 'bar' })).to.equal('bar');
+        });
+
+        it('should return undefined for function-valued expression results', async () => {
+            const templ = compileExpression('foo');
+            expect(await templ({ foo: () => {} })).to.equal(undefined);
+        });
+
+        it('should return undefined for function-valued expression traversal', async () => {
+            const templ = compileExpression('foo.bar');
+            expect(await templ({ foo: () => {} })).to.equal(undefined);
         });
 
         it('should evaluate expression as true', async () => {

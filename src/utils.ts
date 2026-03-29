@@ -38,3 +38,16 @@ export function hasOwnKey(obj: object, key: string): boolean {
 export function isLookupObject(value: any): value is Record<string, any> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
+
+export function lookupOwnValue(obj: any, key: string): any {
+    if (!isLookupObject(obj) || UNSAFE_KEYS.has(key) || !hasOwnKey(obj, key)) {
+        return undefined;
+    }
+
+    const value = obj[key];
+    if (typeof value === 'function') {
+        return undefined;
+    }
+
+    return value;
+}
