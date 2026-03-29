@@ -1,5 +1,5 @@
 import type { Execution } from '../execution';
-import { ensure, hasOwnKey, isLookupObject, UNSAFE_KEYS } from '../../utils';
+import { ensure, isLookupObject, lookupOwnValue, UNSAFE_KEYS } from '../../utils';
 const hIf = (a: any) => Boolean(a);
 const hTypeof = (a: any) => typeof a;
 const hWith = (a: any) => [a];
@@ -21,13 +21,7 @@ function pick(value: any, key: string): any {
         throw new Error(`pick does not allow access to unsafe key "${key}"`);
     }
 
-    if (!hasOwnKey(value, key)) {
-        return undefined;
-    }
-
-    const picked = value[key];
-    ensure(typeof picked !== 'function', 'pick does not allow function-valued properties');
-    return picked;
+    return lookupOwnValue(value, key);
 }
 
 export const codeHelpers = Object.assign(Object.create(null), {

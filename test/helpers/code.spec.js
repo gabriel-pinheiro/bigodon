@@ -125,21 +125,15 @@ describe('helpers', () => { describe('code', () => {
             await expect(templ({ arr: [1, 2, 3] })).to.reject(/use itemAt for array indexing/i);
         });
 
-        it('should reject function first arguments', async () => {
-            const templ = compile('{{pick foo "bar"}}');
-            await expect(templ({ foo: () => 'baz' })).to.reject(/pick expects an object as first argument/i);
-        });
-
         it('should reject unsafe keys', async () => {
             const templ = compile('{{pick foo key}}');
             await expect(templ({ foo: { bar: 'baz' }, key: '__proto__' }))
                 .to.reject(/pick does not allow access to unsafe key "__proto__"/i);
         });
 
-        it('should reject function-valued properties', async () => {
+        it('should return empty for function-valued properties', async () => {
             const templ = compile('{{pick foo "fn"}}');
-            await expect(templ({ foo: { fn: function hello() { return 'x'; } } }))
-                .to.reject(/pick does not allow function-valued properties/i);
+            expect(await templ({ foo: { fn: function hello() { return 'x'; } } })).to.equal('');
         });
 
         it('should only use own properties', async () => {

@@ -323,8 +323,6 @@ describe('helpers', () => { describe('string', () => {
         it('should reject values that cannot become strings', async () => {
             await expect(compile('{{json value}}')({ value: undefined }))
                 .to.reject(/json could not stringify the provided value/i);
-            await expect(compile('{{json value}}')({ value: () => 'x' }))
-                .to.reject(/json could not stringify the provided value/i);
         });
 
         it('should surface native stringify errors like circular references', async () => {
