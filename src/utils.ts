@@ -15,7 +15,7 @@ export function deepCloneNullPrototype(obj: object): object {
     }
 
     const clone = Object.create(null);
-    for (const key in obj) {
+    for (const key of Object.keys(obj)) {
         if (UNSAFE_KEYS.has(key)) {
             continue;
         }
@@ -29,4 +29,12 @@ export function ensure(condition: boolean, message: string): void {
     if (!condition) {
         throw new Error(message);
     }
+}
+
+export function hasOwnKey(obj: object, key: string): boolean {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+}
+
+export function isLookupObject(value: any): value is Record<string, any> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

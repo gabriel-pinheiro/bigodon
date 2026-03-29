@@ -45,6 +45,17 @@ describe('utils', () => {
             expect(clone.__proto__).to.be.undefined();
             expect(clone.constructor).to.be.undefined();
         });
+
+        it('should ignore inherited enumerable keys', () => {
+            const parent = { leaked: 5 };
+            const obj = Object.create(parent);
+            obj.own = 7;
+
+            const clone = deepCloneNullPrototype(obj);
+
+            expect(clone.own).to.equal(7);
+            expect(clone.leaked).to.be.undefined();
+        });
     });
 
     describe('ensure', () => {

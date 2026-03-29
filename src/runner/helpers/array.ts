@@ -1,4 +1,4 @@
-import { ensure, UNSAFE_KEYS } from '../../utils';
+import { ensure, hasOwnKey, UNSAFE_KEYS } from '../../utils';
 
 function first(arr: any): any {
     if (!Array.isArray(arr)) {
@@ -140,17 +140,34 @@ function reverse(arr: any): any[] | string {
 }
 
 function pluck(arr: any, key: string): any[] {
+    ensure(typeof key === 'string', 'pluck second argument must be a string');
+
     if (!Array.isArray(arr)) {
         return [];
     }
 
     if (UNSAFE_KEYS.has(key)) {
-        return [];
+        throw new Error(`pluck does not allow access to unsafe key "${key}"`);
     }
 
-    return arr
-        .map(item => item[key])
-        .filter(item => item !== void 0);
+    return arr.reduce((result, item) => {
+        if (typeof item === 'function') {
+            throw new Error('pluck does not allow function items');
+        }
+
+        if (item === null || typeof item === 'undefined') {
+            return result;
+        }
+
+        if (!hasOwnKey(item, key)) {
+            return result;
+        }
+
+        const picked = item[key];
+        ensure(typeof picked !== 'function', 'pluck does not allow function-valued properties');
+        result.push(picked);
+        return result;
+    }, [] as any[]);
 }
 
 function unique(arr: any): any[] {
@@ -214,5 +231,3 @@ export const arrayHelpers = Object.assign(Object.create(null), {
     contains: includes, isArray, each, forEach, join, merge,
     reverse, pluck, unique, isEmpty, splice, sort,
 });
-
-

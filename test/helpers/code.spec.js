@@ -2,6 +2,7 @@ const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
 const { compile } = require('../../dist');
+const { codeHelpers } = require('../../dist/runner/helpers/code');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -93,6 +94,64 @@ describe('helpers', () => { describe('code', () => {
         it('should halt from inside context blocks', async () => {
             const templ = compile('A{{#with foo}}B{{#is $this "bar"}}{{return}}{{/is}}C{{/with}}D');
             expect(await templ({ foo: 'bar' })).to.equal('AB');
+        });
+    });
+
+    describe('pick', () => {
+        it('should pick direct properties', async () => {
+            const templ = compile('{{pick foo "bar"}}');
+            expect(await templ({ foo: { bar: 'baz' } })).to.equal('baz');
+        });
+
+        it('should pick literal dotted keys', async () => {
+            const templ = compile('{{pick $this "foo.bar"}}');
+            expect(await templ({ 'foo.bar': 'baz' })).to.equal('baz');
+        });
+
+        it('should return empty for missing keys', async () => {
+            const templ = compile('{{pick foo "bar"}}');
+            expect(await templ({ foo: {} })).to.equal('');
+        });
+
+        it('should reject null and primitive first arguments', async () => {
+            await expect(compile('{{pick foo "bar"}}')({ foo: null })).to.reject(/pick expects an object as first argument/i);
+            await expect(compile('{{pick foo "bar"}}')({ foo: 1 })).to.reject(/pick expects an object as first argument/i);
+            await expect(compile('{{pick foo "bar"}}')({ foo: 'bar' })).to.reject(/pick expects an object as first argument/i);
+            await expect(compile('{{pick foo "bar"}}')({ foo: true })).to.reject(/pick expects an object as first argument/i);
+        });
+
+        it('should reject array first arguments and hint itemAt', async () => {
+            const templ = compile('{{pick arr "length"}}');
+            await expect(templ({ arr: [1, 2, 3] })).to.reject(/use itemAt for array indexing/i);
+        });
+
+        it('should reject function first arguments', async () => {
+            const templ = compile('{{pick foo "bar"}}');
+            await expect(templ({ foo: () => 'baz' })).to.reject(/pick expects an object as first argument/i);
+        });
+
+        it('should reject unsafe keys', async () => {
+            const templ = compile('{{pick foo key}}');
+            await expect(templ({ foo: { bar: 'baz' }, key: '__proto__' }))
+                .to.reject(/pick does not allow access to unsafe key "__proto__"/i);
+        });
+
+        it('should reject function-valued properties', async () => {
+            const templ = compile('{{pick foo "fn"}}');
+            await expect(templ({ foo: { fn: function hello() { return 'x'; } } }))
+                .to.reject(/pick does not allow function-valued properties/i);
+        });
+
+        it('should only use own properties', async () => {
+            const base = { bar: 'baz' };
+            const foo = Object.create(base);
+            const templ = compile('{{pick foo "bar"}}');
+            expect(await templ({ foo })).to.equal('');
+        });
+
+        it('should reject unsafe keys from helper directly', () => {
+            expect(() => codeHelpers.pick({}, '__proto__'))
+                .to.throw(/pick does not allow access to unsafe key "__proto__"/i);
         });
     });
 
