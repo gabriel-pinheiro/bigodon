@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { compile } = require('../../dist');
+const { compile, default: Bigodon } = require('../../dist');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
@@ -277,6 +277,63 @@ describe('helpers', () => { describe('string', () => {
             const templ = compile('{{replace 1234 12 56}}');
             const result = await templ();
             expect(result).to.equal('5634');
+        });
+    });
+
+    describe('json', () => {
+        it('should stringify compact by default', async () => {
+            const templ = compile('{{json obj}}');
+            expect(await templ({ obj: { foo: 'bar', count: 2 } }))
+                .to.equal('{"foo":"bar","count":2}');
+        });
+
+        it('should stringify compact for false', async () => {
+            const templ = compile('{{json obj false}}');
+            expect(await templ({ obj: { foo: 'bar', count: 2 } }))
+                .to.equal('{"foo":"bar","count":2}');
+        });
+
+        it('should stringify pretty for true', async () => {
+            const templ = compile('{{json obj true}}');
+            expect(await templ({ obj: { foo: 'bar', count: 2 } }))
+                .to.equal('{\n  "foo": "bar",\n  "count": 2\n}');
+        });
+
+        it('should stringify with numeric indentation', async () => {
+            const templ = compile('{{json obj 4}}');
+            expect(await templ({ obj: { foo: 'bar', count: 2 } }))
+                .to.equal('{\n    "foo": "bar",\n    "count": 2\n}');
+        });
+
+        it('should work as JSONstringify', async () => {
+            const templ = compile('{{JSONstringify obj}}');
+            expect(await templ({ obj: { foo: 'bar' } }))
+                .to.equal('{"foo":"bar"}');
+        });
+
+        it('should reject invalid format values', async () => {
+            await expect(compile('{{json obj "2"}}')({ obj: { foo: 'bar' } }))
+                .to.reject(/json second argument must be a boolean or number/i);
+            await expect(compile('{{json obj format}}')({ obj: { foo: 'bar' }, format: {} }))
+                .to.reject(/json second argument must be a boolean or number/i);
+            await expect(compile('{{json obj format}}')({ obj: { foo: 'bar' }, format: [] }))
+                .to.reject(/json second argument must be a boolean or number/i);
+        });
+
+        it('should reject values that cannot become strings', async () => {
+            await expect(compile('{{json value}}')({ value: undefined }))
+                .to.reject(/json could not stringify the provided value/i);
+            await expect(compile('{{json value}}')({ value: () => 'x' }))
+                .to.reject(/json could not stringify the provided value/i);
+        });
+
+        it('should surface native stringify errors like circular references', async () => {
+            const bigodon = new Bigodon();
+            const value = {};
+            value.self = value;
+            bigodon.addHelper('makeCircular', () => value);
+            const templ = bigodon.compile('{{json (makeCircular)}}');
+            await expect(templ()).to.reject(/error at helper json/i);
         });
     });
 

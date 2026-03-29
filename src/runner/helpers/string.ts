@@ -45,6 +45,24 @@ function padRight(str: any, length: number, char: string): string {
     return String(str).padEnd(length, char);
 }
 
+function json(obj: any, format?: boolean | number): string {
+    ensure(
+        typeof format === 'undefined' || typeof format === 'boolean' || typeof format === 'number',
+        'json second argument must be a boolean or number',
+    );
+
+    let space;
+    if (format === true) {
+        space = 2;
+    } else if (typeof format === 'number') {
+        space = format;
+    }
+
+    const result = JSON.stringify(obj, null, space);
+    ensure(typeof result === 'string', 'json could not stringify the provided value');
+    return result;
+}
+
 export const stringHelpers = Object.assign(Object.create(null), {
     append, upper: uppercase, upcase: uppercase, uppercase,
     lowercase, down: lowercase, lower: lowercase, padRight,
@@ -53,5 +71,6 @@ export const stringHelpers = Object.assign(Object.create(null), {
     capitalizeFirst: capitalize, toString, split, startsWith,
     endsWith, trimLeft, trimRight, trimStart: trimLeft,
     trimEnd: trimRight, replace, substring, padLeft,
-    capitalizeWords: capitalizeAll, uuid,
+    capitalizeWords: capitalizeAll, uuid, json,
+    JSONstringify: json,
 });

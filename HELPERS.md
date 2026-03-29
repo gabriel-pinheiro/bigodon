@@ -37,6 +37,7 @@ From [string helpers](#String-Helpers):
 - [typeof](#typeof): Returns the type of the argument. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L3); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L29-L38))
 - [with](#with): Runs a block with the given context. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L4); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L40-L74))
 - [return](#return): Halts the execution and the template will return what has already been rendered. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L5-L8); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L76-L97))
+- [pick](#pick): Returns a property from an object using a string key.
 
 
 ## Comparison Helpers
@@ -86,6 +87,8 @@ From [string helpers](#String-Helpers):
 - [split](#split): Splits a string into an array of strings on each separator. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L6); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L89-L95))
 - [replace](#replace): Replaces all occurrences of the given value with the given replacement. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L13); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L263-L281))
 - [substring](#substring): Returns a substring of the given string. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L23-L27); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L283-L301))
+- [json](#json): Returns the json string of an object.
+- [JSONstringify](#jsonstringify): Alias of [json](#json).
 - [trim](#trim): Removes whitespace around a string. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L9); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L161-L173))
 - [trimLeft](#trimLeft): Removes whitespace from the left side of a string. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts#L10); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js#L175-L193))
 - [trimStart](#trimStart): Alias of [trimLeft](#trimLeft).
@@ -511,6 +514,39 @@ Words (descending): Orange, Mango, banana, apple
 
 ---
 
+### **pick**
+
+`pick` returns a property from an object using a string key.
+
+#### Example:
+```hbs
+Name: {{pick user "name"}}
+Literal dotted key: {{pick $this "foo.bar"}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "user": {
+        "name": "Alice"
+    },
+    "foo.bar": "baz"
+}
+```
+
+### Generated output
+```
+Name: Alice
+Literal dotted key: baz
+```
+
+</details>
+
+---
+
 ### **return**
 
 `return` halts template execution immediately and returns what has already been rendered up to that point. This is useful for conditional early termination.
@@ -557,6 +593,55 @@ Processing completed.
 </details>
 
 ---
+
+### **json**
+
+`json` returns the json string of an object.
+
+#### Example:
+```hbs
+Compact: {{json user}}
+Pretty:
+{{json user true}}
+Indented:
+{{json user 4}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "user": {
+        "name": "Alice",
+        "age": 30
+    }
+}
+```
+
+### Generated output
+```
+Compact: {"name":"Alice","age":30}
+Pretty:
+{
+  "name": "Alice",
+  "age": 30
+}
+Indented:
+{
+    "name": "Alice",
+    "age": 30
+}
+```
+
+</details>
+
+---
+
+### **JSONstringify**
+
+`JSONstringify` is an alias of [`json`](#json).
 
 ### **or**
 

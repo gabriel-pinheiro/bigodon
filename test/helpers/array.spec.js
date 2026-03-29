@@ -328,10 +328,37 @@ describe('helpers', () => { describe('array', () => {
             expect(await templ({ item: void 0 })).to.equal('true');
         });
 
-        it('should not allow unsafe keys', async () => {
-            const objWithUnsafeKey = Object.create(null);
-            objWithUnsafeKey.__proto__ = 'foo';
-            expect(arrayHelpers.pluck([objWithUnsafeKey], '__proto__')[0]).to.equal(void 0);
+        it('should reject unsafe keys', async () => {
+            const templ = compile(`{{join (pluck arr key) ", "}}`);
+            await expect(templ({ arr: [{ name: 'foo' }], key: '__proto__' }))
+                .to.reject(/pluck does not allow access to unsafe key "__proto__"/i);
+            expect(() => arrayHelpers.pluck([{ name: 'foo' }], '__proto__'))
+                .to.throw(/pluck does not allow access to unsafe key "__proto__"/i);
+        });
+
+        it('should reject function items', async () => {
+            const templ = compile(`{{join (pluck arr "name") ", "}}`);
+            await expect(templ({ arr: [() => 'x'] }))
+                .to.reject(/pluck does not allow function items/i);
+        });
+
+        it('should reject function-valued properties', async () => {
+            const templ = compile(`{{join (pluck arr "fn") ", "}}`);
+            await expect(templ({ arr: [{ fn: function hello() { return 'x'; } }] }))
+                .to.reject(/pluck does not allow function-valued properties/i);
+        });
+
+        it('should skip items without the property', async () => {
+            const templ = compile(`{{join (pluck arr "name") ", "}}`);
+            expect(await templ({ arr: [1, true, null, void 0, {}, { name: 'foo' }, { name: 'bar' }] }))
+                .to.equal('foo, bar');
+        });
+
+        it('should only pluck own properties', async () => {
+            const parent = { name: 'foo' };
+            const child = Object.create(parent);
+            const templ = compile(`{{join (pluck arr "name") ", "}}`);
+            expect(await templ({ arr: [child, { name: 'bar' }] })).to.equal('bar');
         });
     });
 
