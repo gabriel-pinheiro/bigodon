@@ -299,6 +299,11 @@ describe('helpers', () => { describe('array', () => {
             expect(await templ({ arr: [] })).to.equal('');
         });
 
+        it('should not mutate the original array', async () => {
+            const templ = compile(`{{join (reverse arr) ", "}}. {{join arr ", "}}`);
+            expect(await templ({ arr: [1, 2, 3] })).to.equal('3, 2, 1. 1, 2, 3');
+        });
+
         it('should reverse strings', async () => {
             const templ = compile(`{{reverse "foo"}}`);
             expect(await templ({})).to.equal('oof');

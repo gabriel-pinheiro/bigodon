@@ -129,7 +129,7 @@ function merge(...arrs: any[]): any[] {
 
 function reverse(arr: any): any[] | string {
     if (Array.isArray(arr)) {
-        return arr.reverse();
+        return arr.slice().reverse();
     }
 
     if (typeof arr === 'string') {
