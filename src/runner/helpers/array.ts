@@ -194,7 +194,7 @@ function splice(arr: any[], start: number, deleteCount: number | undefined): any
     if (!Array.isArray(arr)) {
         return [];
     }
-    return arr.splice(start);
+    return arr.slice(start);
 }
 
 function compareNumbersAscending(a: number, b: number) {

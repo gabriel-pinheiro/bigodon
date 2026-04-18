@@ -405,6 +405,11 @@ describe('helpers', () => { describe('array', () => {
         expect(await templ({ arr: [1, 2, 3], start: -1, deleteCount: 1 })).to.equal('(3)');
         });
 
+        it('should not mutate the original array', async () => {
+            const templ = compile(`{{join (splice arr start deleteCount) ", "}}. {{join arr ", "}}`);
+            expect(await templ({ arr: [1, 2, 3], start: 1, deleteCount: 2 })).to.equal('2, 3. 1, 2, 3');
+        });
+
         it('should return empty array for out of index', async () => {
         const templ = compile(`{{#splice arr start}}({{$this}}){{/splice}}`);
         expect(await templ({ arr: [1, 2, 3], start: 5 })).to.equal('');
