@@ -144,5 +144,28 @@ describe('security', () => {
             const res = await templ({ obj: child });
             expect(res).to.equal('');
         });
+
+        it('helper-created Date objects do not expose constructor/prototype paths', async () => {
+            const templ = compile('{{#with (date "2024-01-01T00:00:00.000Z")}}{{constructor}}{{__proto__}}{{prototype}}{{/with}}');
+            const res = await templ();
+            expect(res).to.equal('');
+        });
+
+        it('helper-created Date objects do not expose methods through path access', async () => {
+            const templ = compile('{{#with (date "2024-01-01T00:00:00.000Z")}}{{toISOString}}{{getTime}}{{/with}}');
+            const res = await templ();
+            expect(res).to.equal('');
+        });
+
+        it('pick refuses unsafe keys on helper-created Date objects', async () => {
+            const templ = compile('{{pick (date "2024-01-01T00:00:00.000Z") "constructor"}}');
+            await expect(templ()).to.reject(/pick does not allow access to unsafe key "constructor"/i);
+        });
+
+        it('pick does not expose inherited Date methods', async () => {
+            const templ = compile('{{pick (date "2024-01-01T00:00:00.000Z") "toISOString"}}');
+            const res = await templ();
+            expect(res).to.equal('');
+        });
     });
 });

@@ -4,6 +4,7 @@ When writing your Bigodon template, you can use helper functions to perform comm
 
 - [array](#Array-Helpers) ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/array.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/array-helpers.spec.js))
 - [comparison](#Comparison-Helpers) ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/comparison.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/comparison-helpers.spec.js))
+- [date](#Date-Helpers) ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
 - [string](#String-Helpers) ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/string.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/string-helpers.spec.js))
 
 ## Array Helpers
@@ -114,6 +115,19 @@ From [comparison helpers](#Comparison-Helpers):
 
 From [code helpers](#Code-Helpers):
 - [typeof](#typeof): Returns the type of the argument. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/code.ts#L3); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/code-helpers.spec.js#L29-L38))
+
+## Date Helpers
+
+- [date](#date): Creates a date from a timestamp number, Date object, or ISO string with explicit time. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+- [now](#now): Returns the current date/time as a Date object. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+- [dateAdd](#dateadd): Adds time and returns a new date. Supports ms, s, min, h, day, week, month and year units (with aliases). ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+- [dateSub](#datesub): Subtracts time and returns a new date. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+- [dateIso](#dateiso): Returns the date in ISO format. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+- [dateTimestamp](#datetimestamp): Returns unix timestamp in milliseconds. ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+- [dateDiff](#datediff): Returns date difference with ms as default unit (supports up to week granularity). ([code](https://github.com/gabriel-pinheiro/bigodon/blob/main/src/runner/helpers/date.ts); [tests](https://github.com/gabriel-pinheiro/bigodon/blob/main/test/helpers/date.spec.js))
+
+From [date helpers](#Date-Helpers):
+- Date strings must include explicit time component, so `2024-01-01` is rejected while `2024-01-01T00:00:00.000Z` is accepted.
 
 ## Examples
 
@@ -887,6 +901,82 @@ Path segments:
   Segment: user
   Segment: documents
   Segment: file.txt
+```
+
+</details>
+
+---
+
+### **date helpers**
+
+Date helpers parse explicit timestamps, create dates, add/subtract time, format ISO strings, return timestamps, and compute differences.
+
+#### Parse and format a stored timestamp:
+```hbs
+Created: {{dateIso (date createdAt)}}
+Created timestamp: {{dateTimestamp (date createdAt)}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "createdAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### Generated output
+```text
+Created: 2024-01-01T00:00:00.000Z
+Created timestamp: 1704067200000
+```
+
+</details>
+
+---
+
+#### Simulate a monthly subscription renewal:
+```hbs
+Renewal date: {{dateIso (dateAdd (now) 1 "month")}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{}
+```
+
+### Generated output
+```text
+Renewal date: <one month after the current date/time, in ISO format>
+```
+
+</details>
+
+---
+
+#### Compare a stored timestamp with the current time:
+```hbs
+Age in days: {{dateDiff (now) (date createdAt) "day"}}
+```
+
+<details>
+<summary>Context and output</summary>
+
+### Context
+```json
+{
+    "createdAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### Generated output
+```text
+Age in days: <depends on current time>
 ```
 
 </details>
