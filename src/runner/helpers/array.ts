@@ -220,10 +220,12 @@ function sort(arr: any, desc: boolean): any[] | string {
     ensure(Array.isArray(arr), 'sort expects an array of numbers or strings');
     ensure(allElementsAreNumeric(arr) || allElementsAreString(arr), 'sort expects all elements to be either string or numeric');
 
+    const sorted = arr.slice();
+
     if (desc) {
-        return typeof arr[0] === 'number' ? arr.sort(compareNumbersDescending) : arr.sort(compareStrings).reverse();
+        return typeof sorted[0] === 'number' ? sorted.sort(compareNumbersDescending) : sorted.sort(compareStrings).reverse();
     }
-    return typeof arr[0] === 'number' ? arr.sort(compareNumbersAscending) : arr.sort(compareStrings);
+    return typeof sorted[0] === 'number' ? sorted.sort(compareNumbersAscending) : sorted.sort(compareStrings);
 }
 
 export const arrayHelpers = Object.assign(Object.create(null), {

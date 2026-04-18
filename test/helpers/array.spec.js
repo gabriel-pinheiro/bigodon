@@ -436,6 +436,12 @@ describe('helpers', () => { describe('array', () => {
             expect(await templ({ arr: ["banana", "Orange", "apple", "Mango", "custard"] })).to.equal('apple, banana, custard, Mango, Orange');
         });
 
+        it('should not mutate the original array', async () => {
+            const templ = compile(`{{join (sort arr) ", "}}. {{join arr ", "}}`);
+
+            expect(await templ({ arr: [100, 14, 78, 90, -100] })).to.equal('-100, 14, 78, 90, 100. 100, 14, 78, 90, -100');
+        });
+
         it('should fail for non arrays', async () => {
             const templ = compile(`{{#sort item}}({{$this}}){{/sort}}`);
 
