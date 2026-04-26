@@ -6,11 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  build-and-test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Repository checkout
         uses: actions/checkout@v4
@@ -19,8 +16,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@jpbm135'
 
       - name: Install dependencies
         run: npm install
@@ -37,6 +32,53 @@ jobs:
 
       - name: Build and test
         run: npm test
+
+  publish-npm:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v4
+
+      - name: Node setup (npmjs)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npmjs
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-github:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v4
+
+      - name: Node setup (GitHub Packages)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@jpbm135'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
 
       - name: Publish to GitHub Packages
         run: npm publish

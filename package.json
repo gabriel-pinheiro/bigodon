@@ -70,7 +70,6 @@
   },
   "packageManager": "yarn@4.14.1",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
     "access": "public"
   }
 }
