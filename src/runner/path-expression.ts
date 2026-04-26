@@ -4,13 +4,15 @@ import { lookupOwnValue } from '../utils';
 import { Execution } from './execution';
 
 export function runPathExpression(execution: Execution, expression: ExpressionStatement): LiteralValue {
+    if (expression.path === '.' || expression.path === '$this') {
+        return execution.context;
+    }
+
     const path = expression.path.split('.');
     let contextDeepness = execution.contexts.length - 1;
     let ctx = execution.context;
 
-    if (expression.path === '$this') {
-        return execution.context;
-    } else if (path[0] === '$this') {
+    if (path[0] === '$this') {
         path.shift();
     } else if (path[0] === '$root') {
         ctx = execution.contexts[0];

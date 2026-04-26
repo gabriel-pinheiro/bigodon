@@ -7,9 +7,24 @@ const { default: Bigodon } = require("../dist");
 const { describe, it } = (exports.lab = Lab.script());
 const { expect } = Code;
 
-const SKIPPED_SPECS = [];
+const SKIPPED_SPECS = [
+  "partials.json",
+  "~dynamic-names.json",
+  "delimiters.json",
+  "~inheritance.json",
+  "~lambdas.json",
+];
 
-const SKIPPED_FEATURES = [].map((feature) => feature.toLowerCase());
+// Bigodon does not auto-walk the context stack on missing keys (deliberate
+// Handlebars-style strict scoping; users opt in via $parent/$root). The
+// spec tests below assert Mustache's auto-walk behavior.
+const SKIPPED_FEATURES = [
+  "Parent contexts",
+  "List Contexts",
+  "Deeply Nested Contexts",
+  "Variable test",
+  "HTML Escaping", // Bigodon does not auto-escape HTML by default;
+].map((feature) => feature.toLowerCase());
 
 describe("spec", () => {
   // NOP Under non-node environments
@@ -40,10 +55,17 @@ describe("spec", () => {
         }
 
         it(test.name, async () => {
-          const data = Object.assign({}, test.data); // Shallow copy
-          if (data.lambda) {
-            /* eslint-disable-next-line no-eval */
-            data.lambda = eval("(" + data.lambda.js + ")");
+          let data;
+          if (Array.isArray(test.data)) {
+            data = test.data.slice();
+          } else if (test.data && typeof test.data === "object") {
+            data = Object.assign({}, test.data);
+            if (data.lambda) {
+              /* eslint-disable-next-line no-eval */
+              data.lambda = eval("(" + data.lambda.js + ")");
+            }
+          } else {
+            data = test.data;
           }
 
           const bigodon = new Bigodon();

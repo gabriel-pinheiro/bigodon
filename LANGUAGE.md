@@ -80,10 +80,17 @@ Hello, {{ name }} :)
 
 ### Generated output
 ```
-
 Hello, George :)
 ```
 </details>
+
+When a comment (or a section open/close tag) is the only non-whitespace content on its line, the entire line — including the trailing newline and any leading indentation — is removed from the output. This matches Mustache's "standalone line" rule and means template structure can be indented for readability without producing extra blank lines. Variable interpolation tags (`{{x}}`, `{{{x}}}`, `{{&x}}`) are not standalone-eligible and always render in place.
+
+---
+
+## Raw output
+
+`{{x}}`, `{{{x}}}`, and `{{&x}}` all produce the same output in Bigodon — values are emitted as-is, never HTML-escaped. The triple-mustache and ampersand forms are accepted for compatibility with Mustache templates; if you need HTML escaping, register an `escape` helper and call `{{escape x}}` explicitly.
 
 ---
 
@@ -338,19 +345,19 @@ You can also use blocks for loops. When given an array, the block will be execut
 ```
 George, your comments:
 
-
     Alice wrote:
     Nice presentation
-
     Bob wrote:
     Thanks for the feedbacks
 ```
 
 </details>
 
+The blank lines that visually separate each iteration in the template come from standalone-line stripping: the `{{#comments}}` and `{{/comments}}` tags consume their own lines, while the empty line between the title and the first iteration is preserved verbatim.
+
 ---
 
-You can use the current item of the loop with `$this`:
+You can use the current item of the loop with `$this` (or its short alias `.`):
 
 ```hbs
 {{#keywords}}
@@ -376,6 +383,13 @@ You can use the current item of the loop with `$this`:
 ```
 
 </details>
+
+`{{.}}` is the Mustache-style implicit iterator and resolves to the current context. It is exactly equivalent to `{{$this}}`:
+
+```hbs
+{{#keywords}}- {{.}}
+{{/keywords}}
+```
 
 ---
 
@@ -411,10 +425,8 @@ You can use `$parent` to point to the parent context (you can use multiple paren
 ```
 George, your comments:
 
-
     From Alice to George:
     Nice presentation
-
     From Bob to George:
     Thanks for the feedbacks
 ```
@@ -432,6 +444,12 @@ You can use negated blocks for conditionals only. Replace `#` by `^` like so:
 You are not logged in
 {{/name}}
 ```
+
+Inverted blocks are also rendered when the value is an empty array — `{{^items}}…{{/items}}` over `{ "items": [] }` runs the body, matching the Mustache rule that empty lists are falsy.
+
+---
+
+Inside `{{# … }}` and `{{/ … }}`, the names `null`, `true`, `false`, and `undefined` are treated as **context keys**, not as the literal value of the same name. So `{{#null}}…{{/null}}` looks up the key `"null"` in the current context (this matters for templates ported from Mustache that use such names as data keys). Use the `if` helper with a literal value if you need conditional logic against the actual values.
 
 ---
 

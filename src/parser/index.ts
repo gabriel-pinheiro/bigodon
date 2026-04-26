@@ -41,6 +41,94 @@ const buildBlock = (loc: Location,
 
 export const VERSION = 3;
 
+// Mustache spec compatibility: standalone-line whitespace stripping.
+// A "standalone tag" is one whose containing line has only the tag and
+// surrounding whitespace; in that case the entire line (leading whitespace
+// and trailing newline) is consumed. Variable interpolation tags
+// ({{x}}, {{{x}}}, {{&x}}) are NOT standalone-eligible per spec.
+const isWsOnly = (s: string): boolean => /^[ \t]*$/.test(s);
+
+const tryStripStandalone = (
+    prev: TextStatement | null,
+    next: TextStatement | null,
+    atTemplateStart: boolean,
+    atTemplateEnd: boolean,
+): void => {
+    let prevCut = 0;
+    if (prev) {
+        const v = prev.value;
+        if (v !== '') {
+            // Non-empty prev. An empty prev was either originally empty or
+            // already stripped by an adjacent standalone sibling — either way,
+            // the current tag is at line start, so prevCut stays 0.
+            const lastNL = v.lastIndexOf('\n');
+            const tail = lastNL === -1 ? v : v.slice(lastNL + 1);
+            if (!isWsOnly(tail)) return;
+            if (lastNL === -1 && !atTemplateStart) return;
+            prevCut = lastNL === -1 ? 0 : lastNL + 1;
+        }
+    }
+
+    let nextCut = 0;
+    if (next) {
+        const v = next.value;
+        const m = v.match(/^([ \t]*)(\r?\n)?/) as RegExpMatchArray;
+        const wsLen = m[1].length;
+        const nlLen = m[2] ? m[2].length : 0;
+        if (nlLen === 0) {
+            if (!atTemplateEnd) return;
+            if (wsLen !== v.length) return;
+        }
+        nextCut = wsLen + nlLen;
+    }
+
+    if (prev) prev.value = prev.value.slice(0, prevCut);
+    if (next) next.value = next.value.slice(nextCut);
+};
+
+const asTextOrNull = (s: Statement | undefined): TextStatement | null =>
+    s && s.type === 'TEXT' ? s : null;
+
+const stripStandaloneLines = (
+    stmts: Statement[],
+    atTemplateStart: boolean,
+    atTemplateEnd: boolean,
+): void => {
+    for (let i = 0; i < stmts.length; i++) {
+        const stmt = stmts[i];
+        const prev = asTextOrNull(stmts[i - 1]);
+        const next = asTextOrNull(stmts[i + 1]);
+        // A position "feels like" the template start if it's the first stmt
+        // in this list AND this list is itself at the template start.
+        const slotAtStart = atTemplateStart && (i === 0 || (i === 1 && prev !== null));
+        const slotAtEnd = atTemplateEnd && (i === stmts.length - 1 || (i === stmts.length - 2 && next !== null));
+
+        if (stmt.type === 'COMMENT') {
+            tryStripStandalone(prev, next, slotAtStart, slotAtEnd);
+        } else if (stmt.type === 'BLOCK') {
+            const innerFirstText = asTextOrNull(stmt.statements[0]);
+            const innerCloseList = (stmt.elseStatements && stmt.elseStatements.length > 0)
+                ? stmt.elseStatements
+                : stmt.statements;
+            const innerLastText = asTextOrNull(innerCloseList[innerCloseList.length - 1]);
+
+            // Opener: prev = parent-list previous TEXT, next = first TEXT inside block
+            tryStripStandalone(prev, innerFirstText, slotAtStart, false);
+            // Closer: prev = last TEXT inside block, next = parent-list next TEXT
+            tryStripStandalone(innerLastText, next, false, slotAtEnd);
+        }
+    }
+
+    for (const stmt of stmts) {
+        if (stmt.type === 'BLOCK') {
+            stripStandaloneLines(stmt.statements, false, false);
+            if (stmt.elseStatements) {
+                stripStandaloneLines(stmt.elseStatements, false, false);
+            }
+        }
+    }
+};
+
 export const $text: Parser<Statement> = text
     .map((value, loc): TextStatement => ({ type: 'TEXT', loc, value }))
     .withName('text');
@@ -54,6 +142,23 @@ const $mustache: Parser<Statement> = $expression.map((expression, { start, end }
     type: 'MUSTACHE',
     loc: { start: start - 2, end: end + 2 },
     expression,
+}));
+
+// Mustache spec compatibility: `{{#null}}` / `{{#true}}` / `{{#false}}` /
+// `{{#undefined}}` look up the matching key in context rather than meaning
+// the literal value (Bigodon's normal interpretation). Only applied as a
+// block head; expression contexts still treat these names as literals.
+const $literalKeyBlockHead: Parser<ExpressionStatement> = Pr.context('literal-key-block-head', function* () {
+    yield optionalSpaces;
+    const name = yield Pr.regex('literal-key-block-head', /^(null|true|false|undefined)/);
+    yield optionalSpaces;
+    yield Pr.lookAhead(closeMustache);
+    return name;
+}).map((name, loc): ExpressionStatement => ({
+    type: 'EXPRESSION',
+    loc,
+    path: name,
+    params: [],
 }));
 
 export const $template = Pr.context('mustache', function* () {
@@ -85,10 +190,24 @@ export const $template = Pr.context('mustache', function* () {
                     break;
                 }
 
+                case '&': {
+                    yield char;
+                    topOfStackStmts(stack).push(yield $mustache);
+                    break;
+                }
+
+                case '{': {
+                    yield char;
+                    topOfStackStmts(stack).push(yield $mustache);
+                    yield Pr.string('}');
+                    break;
+                }
+
                 case '#':
                 case '^': {
                     const typeChar = yield char;
-                    const expression: ValueStatement = yield $expression;
+                    const literalNamed = yield Pr.optional($literalKeyBlockHead);
+                    const expression: ValueStatement = literalNamed || (yield $expression);
                     if (expression.type === 'LITERAL') {
                         yield Pr.fail(`Blocks must receive path expressions or helpers. Literal blocks are not allowed.`);
                         // Never happens, just for typescript to know that below here, expression is not LiteralStatement
@@ -111,7 +230,8 @@ export const $template = Pr.context('mustache', function* () {
 
                 case '/': {
                     yield char; // Consuming '/'
-                    const expression: ValueStatement = yield $expression;
+                    const literalNamed = yield Pr.optional($literalKeyBlockHead);
+                    const expression: ValueStatement = literalNamed || (yield $expression);
                     if (expression.type === 'LITERAL') {
                         yield Pr.fail(`Unexpected {{/${expression.value}}}. Literal blocks are not allowed to be closed.`);
                         // Never happens, just for typescript to know that below here, expression is not LiteralStatement
@@ -233,5 +353,6 @@ export const $template = Pr.context('mustache', function* () {
         yield Pr.fail(`Expected {{/${block.expression.path}}}, make sure this block was closed`);
     }
 
+    stripStandaloneLines(stack[0].statements, true, true);
     return stack[0];
 }).map(({ type, ...v }, loc) => ({ type, loc, ...v }));

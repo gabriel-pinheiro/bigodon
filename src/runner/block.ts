@@ -2,32 +2,32 @@ import { runStatement, runStatements } from '.';
 import { BlockStatement } from '../parser/statements';
 import { Execution } from './execution';
 
+const isFalsy = (value: unknown): boolean =>
+    !value || (Array.isArray(value) && value.length === 0);
+
 export async function runBlock(execution: Execution, block: BlockStatement): Promise<string | null> {
     const value = await runStatement(execution, block.expression);
+    const falsy = isFalsy(value);
+
     // Negated blocks
     if (block.isNegated) {
-        // Value is true and there is an else block
-        if (value && Array.isArray(block.elseStatements)) {
-            return await runStatements(execution, block.elseStatements);
+        if (falsy) {
+            return await runStatements(execution, block.statements);
         }
 
-        // Value is true and there is no else block
-        if (value) {
-            return null;
-        }
-
-        // Value is false
-        return await runStatements(execution, block.statements);
-    }
-
-    // Falsy value or empty array
-    if (!value || (Array.isArray(value) && value.length === 0)) {
-        // Value is false and there is an else block
         if (Array.isArray(block.elseStatements)) {
             return await runStatements(execution, block.elseStatements);
         }
 
-        // Value is false and there is no else block
+        return null;
+    }
+
+    // Falsy value or empty array
+    if (falsy) {
+        if (Array.isArray(block.elseStatements)) {
+            return await runStatements(execution, block.elseStatements);
+        }
+
         return null;
     }
 
@@ -55,6 +55,8 @@ export async function runBlock(execution: Execution, block: BlockStatement): Pro
         return result;
     }
 
-    // Truthy value
+    // Truthy scalar — preserve Bigodon's existing behavior of NOT pushing the
+    // scalar onto the context stack. Mustache spec tests that rely on the
+    // push are listed in test/spec.spec.js SKIPPED_FEATURES.
     return await runStatements(execution, block.statements);
 }
