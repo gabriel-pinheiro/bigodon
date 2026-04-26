@@ -9,13 +9,18 @@ const { expect } = Code;
 describe('runner', () => {
     describe('helper', () => {
         it('should execute helpers', async () => {
-            const templ = compile('Hello, {{upper name }} {{upper "Schmidt" }}!');
+            const bigodon = new Bigodon();
+            bigodon.addHelper('upper', s => String(s).toUpperCase());
+            const templ = bigodon.compile('Hello, {{upper name }} {{upper "Schmidt" }}!');
             const result = await templ({ name: 'George' });
             expect(result).to.equal('Hello, GEORGE SCHMIDT!');
         });
 
         it('should execute nested helpers', async () => {
-            const templ = compile('Hello, {{upper (append name " schmidt") }}!');
+            const bigodon = new Bigodon();
+            bigodon.addHelper('upper', s => String(s).toUpperCase());
+            bigodon.addHelper('append', (a, b) => String(a) + String(b));
+            const templ = bigodon.compile('Hello, {{upper (append name " schmidt") }}!');
             const result = await templ({ name: 'George' });
             expect(result).to.equal('Hello, GEORGE SCHMIDT!');
         });
@@ -41,19 +46,19 @@ describe('runner', () => {
         });
 
         it('should not execute default helpers when disabled', async () => {
-            const templ = compile('Hello, {{upper name }}!');
+            const templ = compile('{{#if name}}yes{{else}}no{{/if}}');
             const result = templ({ name: 'George' }, { allowDefaultHelpers: false });
-            await expect(result).to.reject(/helper upper not found/i);
+            await expect(result).to.reject(/helper if not found/i);
         });
 
         it('should allow default helpers when enabled', async () => {
-            const templ = compile('Hello, {{upper name }}!');
+            const templ = compile('{{#if name}}yes{{else}}no{{/if}}');
             const result = await templ({ name: 'George' }, { allowDefaultHelpers: true });
-            expect(result).to.equal('Hello, GEORGE!');
+            expect(result).to.equal('yes');
 
-            const templ2 = compile('Hello, {{upper name }}!');
+            const templ2 = compile('{{#if name}}yes{{else}}no{{/if}}');
             const result2 = await templ2({ name: 'George' }, { allowDefaultHelpers: null });
-            expect(result2).to.equal('Hello, GEORGE!');
+            expect(result2).to.equal('yes');
         });
 
         it('should not allow unsafe keys as helper names', async () => {

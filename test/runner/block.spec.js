@@ -147,7 +147,9 @@ describe('runner', () => { describe('blocks', () => {
   });
 
   it('should parse complex templates with mustaches, blocks, and so on', async () => {
-      const templ = compile(`
+      const bigodon = new Bigodon();
+      bigodon.addHelper('upper', s => String(s).toUpperCase());
+      const templ = bigodon.compile(`
 {
 "id": {{id}},
 "code": "{{upper code}}",

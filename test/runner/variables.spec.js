@@ -1,11 +1,23 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { compile } = require('../../dist');
+const { compile, default: Bigodon } = require('../../dist');
 
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
 
+const withHelpers = () => {
+    const bigodon = new Bigodon();
+    bigodon.addHelper('add', (a, b) => Number(a) + Number(b));
+    bigodon.addHelper('multiply', (a, b) => Number(a) * Number(b));
+    bigodon.addHelper('uppercase', s => String(s).toUpperCase());
+    bigodon.addHelper('capitalize', s => String(s).charAt(0).toUpperCase() + String(s).slice(1));
+    bigodon.addHelper('append', (...parts) => parts.map(String).join(''));
+    bigodon.addHelper('typeof', v => typeof v);
+    bigodon.addHelper('is', (a, b) => a == b);
+    bigodon.addHelper('default', (...args) => args.find(v => v !== null && typeof v !== 'undefined'));
+    return bigodon;
+};
 
 describe('runtime', () => {
   describe('variables', () => {
@@ -30,12 +42,14 @@ describe('runtime', () => {
     });
 
     it('should assign variables from helper results', async () => {
-      const template = compile('{{= $upperName (uppercase name)}}{{ $upperName }}');
+      const bigodon = withHelpers();
+      const template = bigodon.compile('{{= $upperName (uppercase name)}}{{ $upperName }}');
       expect(await template({ name: 'john' })).to.equal('JOHN');
     });
 
     it('should handle multiple variable assignments', async () => {
-      const template = compile('{{= $x 1}}{{= $y 2}}{{= $sum (add $x $y)}}Result: {{ $sum }}');
+      const bigodon = withHelpers();
+      const template = bigodon.compile('{{= $x 1}}{{= $y 2}}{{= $sum (add $x $y)}}Result: {{ $sum }}');
       expect(await template()).to.equal('Result: 3');
     });
 
@@ -69,12 +83,14 @@ describe('runtime', () => {
     });
 
     it('should handle variables with helper calls', async () => {
-      const template = compile('{{= $name "john"}}{{capitalize $name}}');
+      const bigodon = withHelpers();
+      const template = bigodon.compile('{{= $name "john"}}{{capitalize $name}}');
       expect(await template()).to.equal('John');
     });
 
     it('should handle complex expressions with variables', async () => {
-      const template = compile('{{= $greeting "Hello"}}{{= $name "World"}}{{append $greeting ", " (uppercase $name) "!"}}');
+      const bigodon = withHelpers();
+      const template = bigodon.compile('{{= $greeting "Hello"}}{{= $name "World"}}{{append $greeting ", " (uppercase $name) "!"}}');
       expect(await template()).to.equal('Hello, WORLD!');
     });
 
@@ -89,7 +105,8 @@ describe('runtime', () => {
     });
 
     it('should maintain variable state within single template execution', async () => {
-      const template = compile(`
+      const bigodon = withHelpers();
+      const template = bigodon.compile(`
 {{= $counter 0}}
 {{#items}}
 {{= $counter (add $counter 1)}}
@@ -103,7 +120,8 @@ Total: {{ $counter }}
     });
 
     it('should handle assignment with complex helper expressions', async () => {
-      const template = compile('{{= $result (add (multiply 3 4) 2)}}{{ $result }}');
+      const bigodon = withHelpers();
+      const template = bigodon.compile('{{= $result (add (multiply 3 4) 2)}}{{ $result }}');
       expect(await template()).to.equal('14');
     });
 
@@ -129,12 +147,14 @@ Total: {{ $counter }}
     });
 
     it('should handle variables with falsy values in conditions', async () => {
-      const template = compile('{{= $zero 0}}{{= $empty ""}}{{= $false false}}{{typeof $zero}} {{typeof $empty}} {{typeof $false}}');
+      const bigodon = withHelpers();
+      const template = bigodon.compile('{{= $zero 0}}{{= $empty ""}}{{= $false false}}{{typeof $zero}} {{typeof $empty}} {{typeof $false}}');
       expect(await template()).to.equal('number string boolean');
     });
 
     it('should handle variable reassignment in loops', async () => {
-      const template = compile(`
+      const bigodon = withHelpers();
+      const template = bigodon.compile(`
 {{= $sum 0}}
 {{#numbers}}
 {{= $sum (add $sum $this)}}
@@ -147,7 +167,8 @@ Total: {{ $counter }}
     });
 
     it('should handle variables in else if chains', async () => {
-      const template = compile(`
+      const bigodon = withHelpers();
+      const template = bigodon.compile(`
 {{= $status "pending"}}
 {{#is $status "complete"}}
 Done!
@@ -161,7 +182,8 @@ Unknown status
     });
 
     it('should not leak variables between template instances', async () => {
-      const template = compile(`
+      const bigodon = withHelpers();
+      const template = bigodon.compile(`
 {{#shouldSet}}
   {{= $foo "bar"}}
 {{/shouldSet}}

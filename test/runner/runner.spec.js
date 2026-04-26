@@ -207,17 +207,21 @@ describe('runner', () => {
         });
 
         it('should evaluate expression as true', async () => {
-            const templ = compileExpression('eq foo "bar"');
+            const templ = compileExpression('if foo');
             expect(await templ({ foo: 'bar' })).to.equal(true);
         });
 
         it('should evaluate expression as false', async () => {
-            const templ = compileExpression('eq foo "bar"');
-            expect(await templ({ foo: 'barz' })).to.equal(false);
+            const templ = compileExpression('if foo');
+            expect(await templ({ foo: '' })).to.equal(false);
         });
 
         it('should evaluate more complex expression as true', async () => {
-            const templ = compileExpression('and (startsWith foo "b") (eq fruit "apple")');
+            const bigodon = new Bigodon();
+            bigodon.addHelper('eq', (a, b) => a === b);
+            bigodon.addHelper('startsWith', (s, p) => String(s).startsWith(p));
+            bigodon.addHelper('and', (...args) => args.every(Boolean));
+            const templ = bigodon.compileExpression('and (startsWith foo "b") (eq fruit "apple")');
             expect(await templ({ foo: 'bar', fruit: 'apple' })).to.equal(true);
         });
     });

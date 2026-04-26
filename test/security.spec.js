@@ -44,32 +44,6 @@ describe('security', () => {
             expect(res).to.equal('');
         });
 
-        it('pluck refuses UNSAFE keys like constructor', async () => {
-            const templ = compile('{{ join (pluck arr "constructor") "," }}');
-            await expect(templ({ arr: [{ a: 1 }, { b: 2 }] }))
-                .to.reject(/pluck does not allow access to unsafe key "constructor"/i);
-        });
-
-        it('pluck refuses function items', async () => {
-            const templ = compile('{{ join (pluck arr "name") "," }}');
-            await expect(templ({ arr: [() => 'x'] }))
-                .to.reject(/pluck does not allow function items/i);
-        });
-
-        it('pluck refuses function-valued properties', async () => {
-            const templ = compile('{{ join (pluck arr "fn") "," }}');
-            await expect(templ({ arr: [{ fn() { return 'x'; } }] }))
-                .to.reject(/pluck does not allow function-valued properties/i);
-        });
-
-        it('pluck does not expose inherited properties', async () => {
-            const parent = { name: 'foo' };
-            const child = Object.create(parent);
-            const templ = compile('{{ join (pluck arr "name") "," }}');
-            const res = await templ({ arr: [child] });
-            expect(res).to.equal('');
-        });
-
         it('helper names cannot be UNSAFE keys', async () => {
             const templ = compile('{{ __proto__ 1 }}');
             await expect(templ()).to.reject(/helper __proto__ not allowed/i);
@@ -111,32 +85,6 @@ describe('security', () => {
             expect(res).to.equal(undefined);
         });
 
-        it('pick refuses UNSAFE keys like constructor', async () => {
-            const templ = compile('{{ pick obj "constructor" }}');
-            await expect(templ({ obj: { a: 1 } }))
-                .to.reject(/pick does not allow access to unsafe key "constructor"/i);
-        });
-
-        it('pick rejects array access and hints itemAt', async () => {
-            const templ = compile('{{ pick arr "length" }}');
-            await expect(templ({ arr: [1, 2, 3] }))
-                .to.reject(/use itemAt for array indexing/i);
-        });
-
-        it('pick hides function-valued properties', async () => {
-            const templ = compile('{{ pick obj "fn" }}');
-            const res = await templ({ obj: { fn() { return 'x'; } } });
-            expect(res).to.equal('');
-        });
-
-        it('pick does not expose inherited properties', async () => {
-            const parent = { name: 'foo' };
-            const child = Object.create(parent);
-            const templ = compile('{{ pick obj "name" }}');
-            const res = await templ({ obj: child });
-            expect(res).to.equal('');
-        });
-
         it('path access does not expose inherited enumerable properties', async () => {
             const parent = { leaked: 'x' };
             const child = Object.create(parent);
@@ -145,25 +93,18 @@ describe('security', () => {
             expect(res).to.equal('');
         });
 
-        it('helper-created Date objects do not expose constructor/prototype paths', async () => {
-            const templ = compile('{{#with (date "2024-01-01T00:00:00.000Z")}}{{constructor}}{{__proto__}}{{prototype}}{{/with}}');
+        it('helper-created objects do not expose constructor/prototype paths', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('makeDate', () => new Date('2024-01-01T00:00:00.000Z'));
+            const templ = bigodon.compile('{{#with (makeDate)}}{{constructor}}{{__proto__}}{{prototype}}{{/with}}');
             const res = await templ();
             expect(res).to.equal('');
         });
 
-        it('helper-created Date objects do not expose methods through path access', async () => {
-            const templ = compile('{{#with (date "2024-01-01T00:00:00.000Z")}}{{toISOString}}{{getTime}}{{/with}}');
-            const res = await templ();
-            expect(res).to.equal('');
-        });
-
-        it('pick refuses unsafe keys on helper-created Date objects', async () => {
-            const templ = compile('{{pick (date "2024-01-01T00:00:00.000Z") "constructor"}}');
-            await expect(templ()).to.reject(/pick does not allow access to unsafe key "constructor"/i);
-        });
-
-        it('pick does not expose inherited Date methods', async () => {
-            const templ = compile('{{pick (date "2024-01-01T00:00:00.000Z") "toISOString"}}');
+        it('helper-created objects do not expose methods through path access', async () => {
+            const bigodon = new Bigodon();
+            bigodon.addHelper('makeDate', () => new Date('2024-01-01T00:00:00.000Z'));
+            const templ = bigodon.compile('{{#with (makeDate)}}{{toISOString}}{{getTime}}{{/with}}');
             const res = await templ();
             expect(res).to.equal('');
         });

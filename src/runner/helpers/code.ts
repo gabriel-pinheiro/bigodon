@@ -1,29 +1,14 @@
 import type { Execution } from '../execution';
-import { ensure, isLookupObject, lookupOwnValue, UNSAFE_KEYS } from '../../utils';
+
 const hIf = (a: any) => Boolean(a);
-const hTypeof = (a: any) => typeof a;
+const hUnless = (a: any) => !a;
 const hWith = (a: any) => [a];
+const hEach = (a: any) => (Array.isArray(a) ? a : [a]);
 const hReturn = function(this: Execution): '' {
     this.halt();
     return '' as const;
 };
 
-function pick(value: any, key: string): any {
-    ensure(typeof key === 'string', 'pick second argument must be a string');
-
-    if (Array.isArray(value)) {
-        throw new Error('pick expects an object as first argument, received array; use itemAt for array indexing');
-    }
-
-    ensure(isLookupObject(value), 'pick expects an object as first argument');
-
-    if (UNSAFE_KEYS.has(key)) {
-        throw new Error(`pick does not allow access to unsafe key "${key}"`);
-    }
-
-    return lookupOwnValue(value, key);
-}
-
 export const codeHelpers = Object.assign(Object.create(null), {
-    if: hIf, typeof: hTypeof, with: hWith, return: hReturn, pick,
+    if: hIf, unless: hUnless, with: hWith, each: hEach, return: hReturn,
 });

@@ -1,7 +1,7 @@
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 
-const { parse, compile } = require('../../dist');
+const { parse, compile, default: Bigodon } = require('../../dist');
 const { VERSION } = require('../../dist/parser');
 
 const { describe, it } = exports.lab = Lab.script();
@@ -473,7 +473,9 @@ describe('parser', () => {
         });
 
         it('should allow as many nesting levels as needed', async () => {
-          const template = compile(`
+          const bigodon = new Bigodon();
+          bigodon.addHelper('is', (a, b) => a == b);
+          const template = bigodon.compile(`
 {{#is $this.value 'one'}}
 first
 {{else is $this.value 'two'}}
@@ -495,7 +497,9 @@ fifth
         });
 
         it('should allow a simple else after nesting elses', async () => {
-          const template = compile(`
+          const bigodon = new Bigodon();
+          bigodon.addHelper('is', (a, b) => a == b);
+          const template = bigodon.compile(`
 {{#is $this.value 'one'}}
 first
 {{else is $this.value 'two'}}

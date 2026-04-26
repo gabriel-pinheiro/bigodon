@@ -446,6 +446,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jpbm135/bigodin@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@jpbm135/bigodin@workspace:."
+  dependencies:
+    "@hapi/code": "npm:^9.0.3"
+    "@hapi/lab": "npm:^26.0.0"
+    "@types/node": "npm:^24.2.1"
+    "@typescript-eslint/eslint-plugin": "npm:^8.39.1"
+    "@typescript-eslint/parser": "npm:^8.39.1"
+    eslint: "npm:^9.33.0"
+    eslint-config-google: "npm:^0.14.0"
+    pierrejs: "npm:^0.5.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:^5.9.2"
+  languageName: unknown
+  linkType: soft
+
 "@jridgewell/gen-mapping@npm:^0.3.12, @jridgewell/gen-mapping@npm:^0.3.5":
   version: 0.3.13
   resolution: "@jridgewell/gen-mapping@npm:0.3.13"
@@ -759,23 +776,6 @@ __metadata:
   checksum: 10c0/7aa7bfee979a5ae61355407411fd1e9c79070b130576497a55455ff5591b0f228b07138968f0fe98f3df5804838016e73a6bbb4b24154da5f0c98c7b1590b389
   languageName: node
   linkType: hard
-
-"bigodon@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "bigodon@workspace:."
-  dependencies:
-    "@hapi/code": "npm:^9.0.3"
-    "@hapi/lab": "npm:^26.0.0"
-    "@types/node": "npm:^24.2.1"
-    "@typescript-eslint/eslint-plugin": "npm:^8.39.1"
-    "@typescript-eslint/parser": "npm:^8.39.1"
-    eslint: "npm:^9.33.0"
-    eslint-config-google: "npm:^0.14.0"
-    pierrejs: "npm:^0.5.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:^5.9.2"
-  languageName: unknown
-  linkType: soft
 
 "brace-expansion@npm:^1.1.7":
   version: 1.1.14

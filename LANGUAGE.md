@@ -89,7 +89,13 @@ Hello, George :)
 
 ## Helpers
 
-Helpers are functions that can be called from within your templates. You can find **all the available helpers in [here](HELPERS.md)** and new helpers can also be defined [like this](LIB.md#helpers). Here's an example:
+Helpers are functions that can be called from within your templates. Bigodon ships only the [block primitives](HELPERS.md) (`if`, `unless`, `with`, `each`, `return`); everything else you register yourself with `addHelper` (see [LIB.md](LIB.md#helpers)).
+
+For example, after registering a `capitalize` helper:
+
+```js
+bigodon.addHelper('capitalize', s => String(s).charAt(0).toUpperCase() + String(s).slice(1));
+```
 
 ```hbs
 Hello, {{capitalize name }}!
@@ -112,11 +118,11 @@ Hello, George!
 
 </details>
 
-Note that spaces are optional inside mustaches, `{{name}}` is the same as `{{ name }}`; `{{upper name }}` is the same as `{{ upper name }}` or `{{upper name}}`.
+Note that spaces are optional inside mustaches, `{{name}}` is the same as `{{ name }}`; `{{capitalize name }}` is the same as `{{ capitalize name }}` or `{{capitalize name}}`.
 
 ---
 
-You can pass multiple arguments to helpers separated by spaces:
+You can pass multiple arguments to helpers separated by spaces. With a `default` helper that returns the first non-null argument:
 
 ```hbs
 Hello, {{default name "stranger"}}!
@@ -162,7 +168,7 @@ Hello, stranger!
 
 ---
 
-You can use `$this` to disambiguate between context path expressions and parameterless helper calls:
+You can use `$this` to disambiguate between context path expressions and parameterless helper calls. Assuming a `uuid` helper is registered:
 
 ```hbs
 {{! This runs the helper uuid and renders its response }}
@@ -232,14 +238,14 @@ Hello, Stranger!
 
 ---
 
-You can also use helpers in blocks:
+You can also use helpers in blocks. With a custom `eq` helper registered (`(a, b) => a === b`):
 
 ```hbs
-{{#eq (typeof name) "string"}}
-Hello, {{capitalize name }}!
+{{#if (eq name "george")}}
+Hello, George!
 {{else}}
-Invalid name
-{{/eq}}
+Hello, stranger!
+{{/if}}
 ```
 
 <details>
@@ -250,9 +256,9 @@ With context `{"name": "george"}` the output would be:
 Hello, George!
 ```
 
-With context `{"name": 5}` the output would be:
+With context `{"name": "alice"}` the output would be:
 ```
-Invalid name
+Hello, stranger!
 ```
 
 </details>
@@ -262,38 +268,38 @@ Invalid name
 Else blocks can be nested with the next helper, instead of writing:
 
 ```hbs
-{{#is country 'BR'}}
+{{#if (eq country 'BR')}}
     Brazil
 {{else}}
-    {{#is country 'US'}}
+    {{#if (eq country 'US')}}
         United States
     {{else}}
         Other
-    {{/is}}
-{{/is}}
+    {{/if}}
+{{/if}}
 ```
 
 You can write:
 
 ```hbs
-{{#is country 'BR'}}
+{{#if (eq country 'BR')}}
     Brazil
-{{else is country 'US'}}
+{{else if (eq country 'US')}}
     United States
 {{else}}
     Other
-{{/is}}
+{{/if}}
 ```
 
 If you nest multiple helpers, you always close the first helper only:
 ```hbs
-{{#gt (length nickname) 16}}
+{{#if (gt (length nickname) 16)}}
     Your nickname is too long :(
-{{else is (length nickname) 3}}
+{{else if (eq (length nickname) 3)}}
     Your nickname is as long as "cat" :)
 {{else}}
     "{{nickname}}" is {{length nickname}} chars long
-{{/gt}} {{! Closing the first helper (gt), not "is" }}
+{{/if}} {{! Closing the first helper (if), not "else if" }}
 ```
 
 ---
@@ -303,7 +309,7 @@ If you nest multiple helpers, you always close the first helper only:
 You can also use blocks for loops. When given an array, the block will be executed for each element in the array. The context inside the block is changed to the item of the array:
 
 ```hbs
-{{name}}, you got {{length comments }} comments:
+{{name}}, your comments:
 
 {{#comments}}
     {{author}} wrote:
@@ -330,7 +336,7 @@ You can also use blocks for loops. When given an array, the block will be execut
 
 ### Generated output
 ```
-George, you got 2 comments:
+George, your comments:
 
 
     Alice wrote:
@@ -376,7 +382,7 @@ You can use the current item of the loop with `$this`:
 You can use `$parent` to point to the parent context (you can use multiple parents like `$parent.$parent.foo`) and `$root` to point to the main context:
 
 ```hbs
-{{name}}, you got {{length comments }} comments:
+{{name}}, your comments:
 
 {{#comments}}
     From {{author}} to {{$parent.name}}:
@@ -403,7 +409,7 @@ You can use `$parent` to point to the parent context (you can use multiple paren
 
 ### Generated output
 ```
-George, you got 2 comments:
+George, your comments:
 
 
     From Alice to George:
@@ -572,7 +578,7 @@ Hello, Alice!
 
 ---
 
-Variables can be assigned from helper results:
+Variables can be assigned from helper results. With an `uppercase` helper registered (`s => String(s).toUpperCase()`):
 
 ```hbs
 {{= $upperName (uppercase name)}}
@@ -598,7 +604,7 @@ Welcome, JOHN!
 
 ---
 
-Variables can be reassigned and used in complex expressions:
+Variables can be reassigned and used in complex expressions. With `add` and `multiply` helpers registered:
 
 ```hbs
 {{= $x 1}}
@@ -653,7 +659,7 @@ Outside: "block"
 
 ---
 
-Variables can be used in loops and maintain state across iterations:
+Variables can be used in loops and maintain state across iterations (still using a custom `add` helper):
 
 ```hbs
 {{= $sum 0}}

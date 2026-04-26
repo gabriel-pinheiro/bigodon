@@ -6,9 +6,9 @@ Secure Handlebars/Mustache templating for user-provided templates with async hel
 
 As well as most Handlebars features like:
 - Handlebars dot notation inside mustaches (`{{foo.bar}}`)
-- Handlebars literal values (`{{add 5 6}}`)
+- Handlebars literal values (`{{helper 5 6}}`)
 - Comments (`{{! ... }}`)
-- Nested expressions (`{{capitalize (append data.firstName data.secondName)}}`)
+- Nested expressions (`{{outer (inner data.firstName data.secondName)}}`)
 - Blocks (`{{#name}}...{{/name}}`)
 - Inverted blocks (`{{^name}}...{{/name}}`)
 - Else blocks (`{{#name}}...{{else}}...{{/name}}`)
@@ -19,7 +19,7 @@ Bigodon also supports:
 - Safely evaluate user-provided templates. (Templates aren't transpiled to JavaScript, they're interpreted by Bigodon)
 - Much better performance.
 - Better error reporting.
-- Better native helpers.
+- Minimal core: only the block primitives (`if`, `unless`, `with`, `each`, `return`) ship by default. Register your own utilities with `addHelper`.
 
 Bigodon is used in production by [Mocko](https://mocko.dev/).
 

@@ -1,6 +1,6 @@
 {
-  "name": "bigodon",
-  "version": "2.5.0",
+  "name": "@jpbm135/bigodin",
+  "version": "0.1.0",
   "description": "Secure Handlebars/Mustache templating for user-provided templates with async helpers support and human-friendly parsing errors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gabriel-pinheiro/bigodon.git"
+    "url": "git+https://github.com/JPBM135/bigodin.git"
   },
   "keywords": [
     "mustache",
@@ -25,12 +25,12 @@
     "interpreter",
     "handlebars"
   ],
-  "author": "Gabriel Pinheiro <gabrielctpinheiro@gmail.com>",
+  "author": "JPBM135 <contact@jpbm.dev>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/gabriel-pinheiro/bigodon/issues"
+    "url": "https://github.com/JPBM135/bigodin/issues"
   },
-  "homepage": "https://github.com/gabriel-pinheiro/bigodon#readme",
+  "homepage": "https://github.com/JPBM135/bigodin#readme",
   "devDependencies": {
     "@hapi/code": "^9.0.3",
     "@hapi/lab": "^26.0.0",
