@@ -3,10 +3,28 @@
   "version": "0.1.0",
   "description": "Secure Handlebars/Mustache templating for user-provided templates with async helpers support and human-friendly parsing errors",
   "main": "dist/index.js",
+  "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "LIB.md",
+    "LANGUAGE.md",
+    "HELPERS.md",
+    "README.md"
+  ],
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig.esm.json && node scripts/postbuild-esm.js",
     "pretest": "npm run build",
     "test": "lab -v -t 100 -I require -a @hapi/code",
     "test:cov": "lab -I require -r html -o coverage.html",
@@ -50,5 +68,9 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.14.1",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
 }
